@@ -1,0 +1,891 @@
+{
+  "Roots": {
+    "Ignis": {
+      "Element": "Fire",
+      "StatFocus": "Logos",
+      "Color": [
+        239,
+        68,
+        68
+      ],
+      "Examples": [
+        "Ignition",
+        "Pyrotechnic"
+      ]
+    },
+    "Aqua": {
+      "Element": "Water",
+      "StatFocus": "Pathos",
+      "Color": [
+        59,
+        130,
+        246
+      ],
+      "Examples": [
+        "Aquatic",
+        "Hydraulic"
+      ]
+    },
+    "Terra": {
+      "Element": "Earth",
+      "StatFocus": "Ethos",
+      "Color": [
+        34,
+        197,
+        94
+      ],
+      "Examples": [
+        "Terrain",
+        "Geology"
+      ]
+    },
+    "Aer": {
+      "Element": "Air",
+      "StatFocus": "Speed",
+      "Color": [
+        202,
+        138,
+        4
+      ],
+      "Examples": [
+        "Aerial",
+        "Pneumatic"
+      ]
+    },
+    "Umbra": {
+      "Element": "Shadow",
+      "StatFocus": "Pathos",
+      "Color": [
+        107,
+        33,
+        168
+      ],
+      "Examples": [
+        "Umbra",
+        "Cryptic"
+      ]
+    },
+    "Lux": {
+      "Element": "Light",
+      "StatFocus": "Logos",
+      "Color": [
+        245,
+        158,
+        11
+      ],
+      "Examples": [
+        "Lucid",
+        "Photon"
+      ]
+    },
+    "Chron": {
+      "Element": "Air",
+      "StatFocus": "Speed",
+      "Color": [
+        168,
+        162,
+        158
+      ],
+      "Examples": [
+        "Chronicle",
+        "Chronology"
+      ]
+    },
+    "Mort": {
+      "Element": "Shadow",
+      "StatFocus": "Pathos",
+      "Color": [
+        31,
+        41,
+        55
+      ],
+      "Examples": [
+        "Mortal",
+        "Mortify"
+      ]
+    },
+    "Vita": {
+      "Element": "Light",
+      "StatFocus": "Ethos",
+      "Color": [
+        16,
+        185,
+        129
+      ],
+      "Examples": [
+        "Vital",
+        "Vitamin"
+      ]
+    },
+    "Cryo": {
+      "Element": "Water",
+      "StatFocus": "Speed",
+      "Color": [
+        165,
+        243,
+        252
+      ],
+      "Examples": [
+        "Cryogenic",
+        "Cryosphere"
+      ]
+    },
+    "Astr": {
+      "Element": "Light",
+      "StatFocus": "Logos",
+      "Color": [
+        253,
+        224,
+        71
+      ],
+      "Examples": [
+        "Astronomy",
+        "Asterisk"
+      ]
+    },
+    "Psych": {
+      "Element": "Shadow",
+      "StatFocus": "Logos",
+      "Color": [
+        217,
+        70,
+        239
+      ],
+      "Examples": [
+        "Psychology",
+        "Psychic"
+      ]
+    },
+    "Phot": {
+      "Element": "Light",
+      "StatFocus": "Speed",
+      "Color": [
+        250,
+        250,
+        110
+      ],
+      "Examples": [
+        "Photon",
+        "Photography"
+      ]
+    },
+    "Therm": {
+      "Element": "Fire",
+      "StatFocus": "Pathos",
+      "Color": [
+        220,
+        38,
+        38
+      ],
+      "Examples": [
+        "Thermal",
+        "Thermometer"
+      ]
+    },
+    "Geo": {
+      "Element": "Earth",
+      "StatFocus": "Ethos",
+      "Color": [
+        132,
+        204,
+        22
+      ],
+      "Examples": [
+        "Geology",
+        "Geography"
+      ]
+    },
+    "Hydr": {
+      "Element": "Water",
+      "StatFocus": "Ethos",
+      "Color": [
+        14,
+        165,
+        233
+      ],
+      "Examples": [
+        "Hydrate",
+        "Hydraulic"
+      ]
+    },
+    "Helio": {
+      "Element": "Light",
+      "StatFocus": "Speed",
+      "Color": [
+        253,
+        186,
+        116
+      ],
+      "Examples": [
+        "Heliocentric",
+        "Heliotrope"
+      ]
+    },
+    "Nyct": {
+      "Element": "Shadow",
+      "StatFocus": "Speed",
+      "Color": [
+        15,
+        23,
+        42
+      ],
+      "Examples": [
+        "Nyctophobia",
+        "Nyctalopia"
+      ]
+    },
+    "Sci": {
+      "Element": "Light",
+      "StatFocus": "Logos",
+      "Color": [
+        248,
+        113,
+        113
+      ],
+      "Examples": [
+        "Science",
+        "Omniscient"
+      ]
+    },
+    "Cred": {
+      "Element": "Earth",
+      "StatFocus": "Ethos",
+      "Color": [
+        163,
+        230,
+        53
+      ],
+      "Examples": [
+        "Credible",
+        "Credit"
+      ]
+    },
+    "Dyna": {
+      "Element": "Fire",
+      "StatFocus": "Speed",
+      "Color": [
+        249,
+        115,
+        22
+      ],
+      "Examples": [
+        "Dynamic",
+        "Dynamite"
+      ]
+    },
+    "Bio": {
+      "Element": "Water",
+      "StatFocus": "Pathos",
+      "Color": [
+        52,
+        211,
+        153
+      ],
+      "Examples": [
+        "Biology",
+        "Biography"
+      ]
+    },
+    "Dict": {
+      "Element": "Air",
+      "StatFocus": "Logos",
+      "Color": [
+        203,
+        213,
+        225
+      ],
+      "Examples": [
+        "Dictate",
+        "Prediction"
+      ]
+    },
+    "Voc": {
+      "Element": "Air",
+      "StatFocus": "Pathos",
+      "Color": [
+        148,
+        163,
+        184
+      ],
+      "Examples": [
+        "Vocal",
+        "Advocate"
+      ]
+    },
+    "Lumina": {
+      "Element": "Light",
+      "StatFocus": "Ethos",
+      "Color": [
+        254,
+        240,
+        138
+      ],
+      "Examples": [
+        "Illuminate",
+        "Luminescent"
+      ]
+    }
+  },
+  "Suffixes": {
+    "tion": {
+      "Role": "Tank",
+      "StatBonus": "Ethos",
+      "Examples": [
+        "Ignition"
+      ]
+    },
+    "ity": {
+      "Role": "Tank",
+      "StatBonus": "Ethos",
+      "Examples": [
+        "Gravity"
+      ]
+    },
+    "ment": {
+      "Role": "Bruiser",
+      "StatBonus": "Ethos",
+      "Examples": [
+        "Element"
+      ]
+    },
+    "ness": {
+      "Role": "Tank",
+      "StatBonus": "Pathos",
+      "Examples": [
+        "Darkness"
+      ]
+    },
+    "ance": {
+      "Role": "Bruiser",
+      "StatBonus": "Ethos",
+      "Examples": [
+        "Defiance"
+      ]
+    },
+    "ence": {
+      "Role": "Bruiser",
+      "StatBonus": "Ethos",
+      "Examples": [
+        "Silence"
+      ]
+    },
+    "ship": {
+      "Role": "Support",
+      "StatBonus": "Pathos",
+      "Examples": [
+        "Friendship"
+      ]
+    },
+    "er": {
+      "Role": "Bruiser",
+      "StatBonus": "Speed",
+      "Examples": [
+        "Fighter"
+      ]
+    },
+    "or": {
+      "Role": "Tank",
+      "StatBonus": "Ethos",
+      "Examples": [
+        "Creator"
+      ]
+    },
+    "ize": {
+      "Role": "Striker",
+      "StatBonus": "Logos",
+      "Examples": [
+        "Memorize"
+      ]
+    },
+    "ate": {
+      "Role": "Caster",
+      "StatBonus": "Logos",
+      "Examples": [
+        "Create"
+      ]
+    },
+    "fy": {
+      "Role": "Assassin",
+      "StatBonus": "Logos",
+      "Examples": [
+        "Liquefy"
+      ]
+    },
+    "en": {
+      "Role": "Striker",
+      "StatBonus": "Logos",
+      "Examples": [
+        "Harden"
+      ]
+    },
+    "ish": {
+      "Role": "Assassin",
+      "StatBonus": "Speed",
+      "Examples": [
+        "Banish"
+      ]
+    },
+    "ous": {
+      "Role": "Support",
+      "StatBonus": "Pathos",
+      "Examples": [
+        "Joyous"
+      ]
+    },
+    "al": {
+      "Role": "Buffer",
+      "StatBonus": "Pathos",
+      "Examples": [
+        "Spatial"
+      ]
+    },
+    "ive": {
+      "Role": "Healer",
+      "StatBonus": "Pathos",
+      "Examples": [
+        "Alive"
+      ]
+    },
+    "able": {
+      "Role": "Healer",
+      "StatBonus": "Pathos",
+      "Examples": [
+        "Readable"
+      ]
+    },
+    "ible": {
+      "Role": "Buffer",
+      "StatBonus": "Ethos",
+      "Examples": [
+        "Visible"
+      ]
+    },
+    "y": {
+      "Role": "Support",
+      "StatBonus": "Speed",
+      "Examples": [
+        "Shiny"
+      ]
+    },
+    "less": {
+      "Role": "Striker",
+      "StatBonus": "Logos",
+      "Examples": [
+        "Fearless",
+        "Aimless"
+      ]
+    },
+    "ful": {
+      "Role": "Buffer",
+      "StatBonus": "Ethos",
+      "Examples": [
+        "Hopeful"
+      ]
+    },
+    "ic": {
+      "Role": "Caster",
+      "StatBonus": "Logos",
+      "Examples": [
+        "Heroic"
+      ]
+    },
+    "ist": {
+      "Role": "Caster",
+      "StatBonus": "Logos",
+      "Examples": [
+        "Scientist"
+      ]
+    },
+    "logy": {
+      "Role": "Support",
+      "StatBonus": "Ethos",
+      "Examples": [
+        "Biology"
+      ]
+    },
+    "phobia": {
+      "Role": "Assassin",
+      "StatBonus": "Pathos",
+      "Examples": [
+        "Arachnophobia"
+      ]
+    },
+    "cracy": {
+      "Role": "Tank",
+      "StatBonus": "Ethos",
+      "Examples": [
+        "Democracy"
+      ]
+    }
+  },
+  "MorphemeWhitelist": {
+    "un-": [
+      "unhappy",
+      "unfair",
+      "undo",
+      "unclear",
+      "unbreakable",
+      "unknown",
+      "unusual",
+      "undo",
+      "untie",
+      "unwrap",
+      "unfold",
+      "unlock",
+      "unplug",
+      "unzip",
+      "unfasten",
+      "unwise",
+      "unclear",
+      "unlike",
+      "until",
+      "untrue",
+      "unreal",
+      "unfit"
+    ],
+    "de-": [
+      "defrost",
+      "decode",
+      "deactivate",
+      "decompose",
+      "demolish",
+      "demagnetize",
+      "deplane",
+      "derail",
+      "destring",
+      "devalue",
+      "deform",
+      "dehydrate",
+      "deflate",
+      "decompose",
+      "dethrone",
+      "detrain",
+      "debug",
+      "decolonize"
+    ],
+    "anti-": [
+      "antifreeze",
+      "antihero",
+      "antibody",
+      "antivirus",
+      "antiperspirant",
+      "anticlimax",
+      "antithesis",
+      "antigen",
+      "antibiotic",
+      "antisocial"
+    ],
+    "re-": [
+      "rewrite",
+      "redo",
+      "replay",
+      "rebuild",
+      "reopen",
+      "return",
+      "reappear",
+      "rearrange",
+      "reconsider",
+      "recompute",
+      "recharge",
+      "rebound",
+      "recycle"
+    ],
+    "pre-": [
+      "preheat",
+      "preview",
+      "preorder",
+      "prepay",
+      "pretest",
+      "prehistoric",
+      "preamble",
+      "preface",
+      "prejudge",
+      "predict",
+      "preliminary"
+    ],
+    "-ify": [
+      "simplify",
+      "purify",
+      "certify",
+      "modify",
+      "qualify",
+      "intensify",
+      "amplify",
+      "\u6db2\u5316",
+      "solidify",
+      "beautify",
+      "clarify",
+      "unify",
+      "justify",
+      "ratify"
+    ],
+    "-ize": [
+      "realize",
+      "organize",
+      "recognize",
+      "emphasize",
+      "specialize",
+      "characterize",
+      "hypothesize",
+      "summarize",
+      "criticize",
+      "maximize",
+      "minimize",
+      "standardize"
+    ],
+    "-s": [
+      "cats",
+      "dogs",
+      "books",
+      "houses",
+      "cars",
+      "trees",
+      "friends",
+      "toys"
+    ],
+    "-ed": [
+      "walked",
+      "jumped",
+      "played",
+      "talked",
+      "helped",
+      "wanted",
+      "liked",
+      "loved"
+    ],
+    "-ing": [
+      "walking",
+      "jumping",
+      "playing",
+      "talking",
+      "helping",
+      "wanting",
+      "liking",
+      "loving"
+    ],
+    "-er": [
+      "teacher",
+      "fighter",
+      "runner",
+      "writer",
+      "reader",
+      "speaker",
+      "builder",
+      "maker"
+    ],
+    "-ful": [
+      "beautiful",
+      "wonderful",
+      "powerful",
+      "colorful",
+      "helpful",
+      "peaceful",
+      "careful"
+    ],
+    "-ly": [
+      "quickly",
+      "slowly",
+      "happily",
+      "carefully",
+      "easily",
+      "quietly",
+      "loudly",
+      "daily"
+    ],
+    "-ness": [
+      "happiness",
+      "sadness",
+      "kindness",
+      "darkness",
+      "brightness",
+      "softness",
+      "hardness"
+    ],
+    "-able": [
+      "readable",
+      "breakable",
+      " countable",
+      "drinkable",
+      "eatable",
+      "playable",
+      "lovable"
+    ],
+    "-ible": [
+      "visible",
+      "edible",
+      "audible",
+      "flexible",
+      "accessible",
+      "comprehensible"
+    ],
+    "-ish": [
+      "childish",
+      "foolish",
+      "selfish",
+      "reddish",
+      "bluish",
+      "bookish",
+      "snobbish"
+    ],
+    "-ous": [
+      "dangerous",
+      "famous",
+      "joyous",
+      "curious",
+      "generous",
+      "courageous",
+      "prosperous"
+    ],
+    "struct-": [
+      "structure",
+      "construct",
+      "destruct",
+      "instruct",
+      "obstruct",
+      "reconstruct"
+    ],
+    "form-": [
+      "form",
+      "transform",
+      "reform",
+      "conform",
+      "deform",
+      "formal",
+      "formula"
+    ],
+    "morph-": [
+      "morph",
+      "morphology",
+      "metamorphosis",
+      "amorphous",
+      "poly morph"
+    ],
+    "phil-": [
+      "philosophy",
+      "philanthropy",
+      "philodendron",
+      "bibliophile"
+    ],
+    "amat-": [
+      "amateur",
+      "amatory",
+      "paramour"
+    ],
+    "path-": [
+      "pathos",
+      "sympathy",
+      "empathy",
+      "antipathy",
+      "apathy",
+      "telepathy"
+    ],
+    "vis-": [
+      "vision",
+      "visible",
+      "visual",
+      "visit",
+      "television",
+      "supervise"
+    ],
+    "vid-": [
+      "video",
+      "evidence",
+      "provide",
+      "revise",
+      "divide",
+      "predict"
+    ],
+    "cogn-": [
+      "cognition",
+      "recognize",
+      "cognizant",
+      "incognizant",
+      "precognition"
+    ],
+    "-ology": [
+      "biology",
+      "psychology",
+      "geology",
+      "technology",
+      "anthropology",
+      "archaeology"
+    ],
+    "omni-": [
+      "omniscient",
+      "omnipotent",
+      "omnipresent",
+      "omnivorous"
+    ],
+    "trans-": [
+      "transform",
+      "translate",
+      "transport",
+      "transplant",
+      "transaction",
+      "transit"
+    ],
+    "meta-": [
+      "metaphor",
+      "metadata",
+      "metamorphosis",
+      "metacognition",
+      "metalanguage"
+    ],
+    "hyper-": [
+      "hyperactive",
+      "hyperbole",
+      "hypertext",
+      "hypertension",
+      "hypermarket"
+    ],
+    "-cracy": [
+      "democracy",
+      "bureaucracy",
+      "aristocracy",
+      "theocracy",
+      "plutocracy"
+    ],
+    "-archy": [
+      "monarchy",
+      "anarchy",
+      "hierarchy",
+      "oligarchy",
+      "patriarchy"
+    ],
+    "reg-": [
+      "region",
+      "regular",
+      "regulate",
+      "regime",
+      "reign",
+      "royal"
+    ],
+    "meter": [
+      "meter",
+      "diameter",
+      "perimeter",
+      "speedometer",
+      "thermometer",
+      "barometer"
+    ],
+    "ordin-": [
+      "order",
+      "ordinary",
+      "coordinate",
+      "subordinate",
+      "insubordinate"
+    ],
+    "pseudo-": [
+      "pseudonym",
+      "pseudoscience",
+      "pseudoclassic",
+      "pseudointellectual"
+    ],
+    "quasi-": [
+      "quasi-scientific",
+      "quasi-professional",
+      "quasi-judicial",
+      "quasi-religious"
+    ]
+  }
+}

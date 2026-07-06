@@ -1,0 +1,894 @@
+{
+  "ArchetypeQuests": {
+    "Innocent": [
+      {
+        "Title": "The Garden Party",
+        "Template": "Barnaby wants to make a {ADJECTIVE} {NOUN} to celebrate the {ADJECTIVE} sun!",
+        "RequiredRoles": [
+          "Support",
+          "Tank"
+        ]
+      },
+      {
+        "Title": "Donut Dreams",
+        "Template": "I tried to eat a {ADJECTIVE} {NOUN} because it looked like a {ADJECTIVE} donut!",
+        "RequiredRoles": [
+          "Support",
+          "Healer"
+        ]
+      },
+      {
+        "Title": "Cloud Watching",
+        "Template": "The {ADJECTIVE} clouds look like a {NOUN}! Let's {VERB} them!",
+        "RequiredRoles": [
+          "Support",
+          "Healer"
+        ]
+      },
+      {
+        "Title": "Flower Power",
+        "Template": "Pick a {ADJECTIVE} flower to {VERB} the {ADJECTIVE} butterflies!",
+        "RequiredRoles": [
+          "Healer",
+          "Support"
+        ]
+      },
+      {
+        "Title": "Rainy Day",
+        "Template": "The {ADJECTIVE} rain makes me want to {VERB} my {NOUN}.",
+        "RequiredRoles": [
+          "Support",
+          "Tank"
+        ]
+      }
+    ],
+    "Sage": [
+      {
+        "Title": "Words of Wisdom",
+        "Template": "The wise teacher explains: 'You must {VERB} with {ADJECTIVE} patience to find the {NOUN}.'",
+        "RequiredRoles": [
+          "Support",
+          "Healer"
+        ]
+      },
+      {
+        "Title": "The Ancient's Lesson",
+        "Template": "'The {ADJECTIVE} truth is that you must {VERB} before you can understand the {NOUN}.'",
+        "RequiredRoles": [
+          "Caster",
+          "Support"
+        ]
+      },
+      {
+        "Title": "Library Quest",
+        "Template": "The {ADJECTIVE} books whisper: 'Find the {NOUN} that can {VERB}!",
+        "RequiredRoles": [
+          "Caster",
+          "Support"
+        ]
+      },
+      {
+        "Title": "Scholar's Path",
+        "Template": "A true scholar must {VERB} the {ADJECTIVE} {NOUN} with dedication.",
+        "RequiredRoles": [
+          "Caster",
+          "Healer"
+        ]
+      },
+      {
+        "Title": "Knowledge Spring",
+        "Template": "Drink from the {ADJECTIVE} fountain to {VERB} ancient {NOUN}.",
+        "RequiredRoles": [
+          "Support",
+          "Caster"
+        ]
+      }
+    ],
+    "Explorer": [
+      {
+        "Title": "Charting the Unknown",
+        "Template": "Gribble's {ADJECTIVE} instruments detected a {NOUN} through the {ADJECTIVE} mist!",
+        "RequiredRoles": [
+          "Striker",
+          "Assassin"
+        ]
+      },
+      {
+        "Title": "Gear Grinding",
+        "Template": "If we don't {VERB} this {ADJECTIVE} gear, the entire {NOUN} will explode!",
+        "RequiredRoles": [
+          "Striker",
+          "Caster"
+        ]
+      },
+      {
+        "Title": "Wilderness Call",
+        "Template": "The {ADJECTIVE} wilderness demands we {VERB} the lost {NOUN}!",
+        "RequiredRoles": [
+          "Striker",
+          "Assassin"
+        ]
+      },
+      {
+        "Title": "Compass Reading",
+        "Template": "My {ADJECTIVE} compass points to a {NOUN} we must {VERB}!",
+        "RequiredRoles": [
+          "Assassin",
+          "Striker"
+        ]
+      },
+      {
+        "Title": "Trail Blazing",
+        "Template": "Let's {VERB} a new trail through the {ADJECTIVE} forest to find the {NOUN}!",
+        "RequiredRoles": [
+          "Striker",
+          "Caster"
+        ]
+      }
+    ],
+    "Hero": [
+      {
+        "Title": "The Defiant Stand",
+        "Template": "The {ADJECTIVE} hero refuses to back down, drawing their blade to {VERB} the encroaching {NOUN}!",
+        "RequiredRoles": [
+          "Striker",
+          "Tank"
+        ]
+      },
+      {
+        "Title": "Leap of Faith",
+        "Template": "Without hesitation, the {ADJECTIVE} champion will {VERB} across the chasm, securing the powerful {NOUN}!",
+        "RequiredRoles": [
+          "Striker",
+          "Assassin"
+        ]
+      },
+      {
+        "Title": "Victory Charge",
+        "Template": "Charge! {VERB} the {ADJECTIVE} {NOUN} with all your might!",
+        "RequiredRoles": [
+          "Striker",
+          "Tank"
+        ]
+      },
+      {
+        "Title": "Shield Bearer",
+        "Template": "Use your {ADJECTIVE} shield to {VERB} the team from the {NOUN}!",
+        "RequiredRoles": [
+          "Tank",
+          "Support"
+        ]
+      },
+      {
+        "Title": "Champion's Call",
+        "Template": "The {ADJECTIVE} call to adventure: {VERB} the {NOUN} of legend!",
+        "RequiredRoles": [
+          "Striker",
+          "Caster"
+        ]
+      }
+    ],
+    "Magician": [
+      {
+        "Title": "The Grand Illusion",
+        "Template": "For my next trick, I will {VERB} a {NOUN} using just a {ADJECTIVE} hat!",
+        "RequiredRoles": [
+          "Caster",
+          "Support"
+        ]
+      },
+      {
+        "Title": "Metamorphic Shift",
+        "Template": "The {ADJECTIVE} spell will {VERB} the target into a {NOUN}!",
+        "RequiredRoles": [
+          "Caster",
+          "Striker"
+        ]
+      },
+      {
+        "Title": "Arcane Spark",
+        "Template": "Channel the {ADJECTIVE} energy to {VERB} a {NOUN} from nothing!",
+        "RequiredRoles": [
+          "Caster",
+          "Assassin"
+        ]
+      },
+      {
+        "Title": "Mana Flow",
+        "Template": "The {ADJECTIVE} mana allows you to {VERB} the ancient {NOUN}!",
+        "RequiredRoles": [
+          "Caster",
+          "Support"
+        ]
+      },
+      {
+        "Title": "Mystic Circle",
+        "Template": "Draw a {ADJECTIVE} circle to {VERB} the summoned {NOUN}!",
+        "RequiredRoles": [
+          "Caster",
+          "Tank"
+        ]
+      }
+    ],
+    "Lover": [
+      {
+        "Title": "Sonnet of the Heart",
+        "Template": "The {ADJECTIVE} vampire writes a {NOUN} to {VERB} the beauty of the {ADJECTIVE} moon.",
+        "RequiredRoles": [
+          "Support",
+          "Healer"
+        ]
+      },
+      {
+        "Title": "Melancholy Dance",
+        "Template": "In the {ADJECTIVE} garden, we shall {VERB} together with the {NOUN}.",
+        "RequiredRoles": [
+          "Support",
+          "Tank"
+        ]
+      },
+      {
+        "Title": "Embrace",
+        "Template": "Give the {ADJECTIVE} embrace to {VERB} the lonely {NOUN}.",
+        "RequiredRoles": [
+          "Healer",
+          "Support"
+        ]
+      },
+      {
+        "Title": "Passion's Flame",
+        "Template": "The {ADJECTIVE} flame of love can {VERB} even the coldest {NOUN}.",
+        "RequiredRoles": [
+          "Support",
+          "Caster"
+        ]
+      },
+      {
+        "Title": "Devotion",
+        "Template": "My {ADJECTIVE} devotion will {VERB} the sacred {NOUN}.",
+        "RequiredRoles": [
+          "Healer",
+          "Support"
+        ]
+      }
+    ],
+    "Jester": [
+      {
+        "Title": "The Prankster's Deal",
+        "Template": "The mischievous trickster says: 'I'll {VERB} the {ADJECTIVE} {NOUN} if you can catch me!'",
+        "RequiredRoles": [
+          "Assassin",
+          "Striker"
+        ]
+      },
+      {
+        "Title": "Mimic's Request",
+        "Template": "Don't just {VERB} at me! Toss me a {ADJECTIVE} {NOUN} to eat!",
+        "RequiredRoles": [
+          "Assassin",
+          "Caster"
+        ]
+      },
+      {
+        "Title": "Joke's On You",
+        "Template": "The {ADJECTIVE} jester will {VERB} the serious {NOUN}!",
+        "RequiredRoles": [
+          "Assassin",
+          "Striker"
+        ]
+      },
+      {
+        "Title": "Laughter Medicine",
+        "Template": "A {ADJECTIVE} laugh can {VERB} any sad {NOUN}!",
+        "RequiredRoles": [
+          "Support",
+          "Healer"
+        ]
+      },
+      {
+        "Title": "Comedy Gold",
+        "Template": "The audience demands: {VERB} the {ADJECTIVE} {NOUN}!",
+        "RequiredRoles": [
+          "Assassin",
+          "Caster"
+        ]
+      }
+    ],
+    "Everyman": [
+      {
+        "Title": "The Honest Day's Work",
+        "Template": "Maintenance requires a {ADJECTIVE} {NOUN} to {VERB} the pipes correctly.",
+        "RequiredRoles": [
+          "Tank",
+          "Support"
+        ]
+      },
+      {
+        "Title": "Shift Change",
+        "Template": "I just want to {VERB} my {NOUN} after a {ADJECTIVE} day of sweeping.",
+        "RequiredRoles": [
+          "Tank",
+          "Striker"
+        ]
+      },
+      {
+        "Title": "Neighborly Help",
+        "Template": "The {ADJECTIVE} neighbor needs help to {VERB} the {NOUN}.",
+        "RequiredRoles": [
+          "Tank",
+          "Support"
+        ]
+      },
+      {
+        "Title": "Simple Pleasures",
+        "Template": "Enjoy a {ADJECTIVE} meal while you {VERB} your {NOUN}.",
+        "RequiredRoles": [
+          "Support",
+          "Healer"
+        ]
+      },
+      {
+        "Title": "Community Spirit",
+        "Template": "Together we can {VERB} the {ADJECTIVE} {NOUN}!",
+        "RequiredRoles": [
+          "Tank",
+          "Support"
+        ]
+      }
+    ],
+    "Caregiver": [
+      {
+        "Title": "Healing Broth",
+        "Template": "Martha needs a {ADJECTIVE} {NOUN} to {VERB} the poor {NOUN} back to health.",
+        "RequiredRoles": [
+          "Healer",
+          "Support"
+        ]
+      },
+      {
+        "Title": "Knit with Love",
+        "Template": "The {ADJECTIVE} scarf will {VERB} the {NOUN} against the {ADJECTIVE} wind.",
+        "RequiredRoles": [
+          "Healer",
+          "Tank"
+        ]
+      },
+      {
+        "Title": "Nurturing Touch",
+        "Template": "Use {ADJECTIVE} care to {VERB} the wounded {NOUN}.",
+        "RequiredRoles": [
+          "Healer",
+          "Support"
+        ]
+      },
+      {
+        "Title": "Comfort Zone",
+        "Template": "Create a {ADJECTIVE} space to {VERB} the frightened {NOUN}.",
+        "RequiredRoles": [
+          "Healer",
+          "Tank"
+        ]
+      },
+      {
+        "Title": "Healing Hands",
+        "Template": "Your {ADJECTIVE} hands can {VERB} any broken {NOUN}.",
+        "RequiredRoles": [
+          "Healer",
+          "Support"
+        ]
+      }
+    ],
+    "Rebel": [
+      {
+        "Title": "The Disruption",
+        "Template": "Nyx wants to {VERB} the {ADJECTIVE} system using a {NOUN} of pure chaos!",
+        "RequiredRoles": [
+          "Striker",
+          "Assassin"
+        ]
+      },
+      {
+        "Title": "Protest Song",
+        "Template": "Our {ADJECTIVE} lyrics will {VERB} the {NOUN} and wake up the town!",
+        "RequiredRoles": [
+          "Striker",
+          "Caster"
+        ]
+      },
+      {
+        "Title": "Breaking Rules",
+        "Template": "Let's {VERB} the {ADJECTIVE} rules and paint the {NOUN}!",
+        "RequiredRoles": [
+          "Assassin",
+          "Striker"
+        ]
+      },
+      {
+        "Title": "Wild Spirit",
+        "Template": "The {ADJECTIVE} freedom calls us to {VERB} the old {NOUN}!",
+        "RequiredRoles": [
+          "Striker",
+          "Assassin"
+        ]
+      },
+      {
+        "Title": "Revolution",
+        "Template": "Time to {VERB} the {ADJECTIVE} establishment with a {NOUN}!",
+        "RequiredRoles": [
+          "Striker",
+          "Caster"
+        ]
+      }
+    ],
+    "Creator": [
+      {
+        "Title": "The First Cut",
+        "Template": "A {ADJECTIVE} block of marble is waiting for a {NOUN} to {VERB} it.",
+        "RequiredRoles": [
+          "Tank",
+          "Support"
+        ]
+      },
+      {
+        "Title": "Breath of Life",
+        "Template": "The statue needs a {ADJECTIVE} {NOUN} to finally {VERB} and come alive.",
+        "RequiredRoles": [
+          "Tank",
+          "Caster"
+        ]
+      },
+      {
+        "Title": "Masterpiece",
+        "Template": "Paint the {ADJECTIVE} canvas to {VERB} the hidden {NOUN}!",
+        "RequiredRoles": [
+          "Caster",
+          "Support"
+        ]
+      },
+      {
+        "Title": "Craftsman's Pride",
+        "Template": "Use {ADJECTIVE} skill to {VERB} the legendary {NOUN}!",
+        "RequiredRoles": [
+          "Tank",
+          "Caster"
+        ]
+      },
+      {
+        "Title": "Artistic Vision",
+        "Template": "The {ADJECTIVE} vision allows you to {VERB} a {NOUN} from dust!",
+        "RequiredRoles": [
+          "Caster",
+          "Support"
+        ]
+      }
+    ],
+    "Ruler": [
+      {
+        "Title": "Decree of Order",
+        "Template": "The Ruler commands: 'You must {VERB} the {ADJECTIVE} {NOUN} to maintain stability!'",
+        "RequiredRoles": [
+          "Tank",
+          "Support"
+        ]
+      },
+      {
+        "Title": "Permit Pending",
+        "Template": "Without a {ADJECTIVE} permit, you cannot {VERB} the {NOUN} in this district!",
+        "RequiredRoles": [
+          "Tank",
+          "Striker"
+        ]
+      },
+      {
+        "Title": "Royal Decree",
+        "Template": "By royal command: {VERB} the {ADJECTIVE} {NOUN} immediately!",
+        "RequiredRoles": [
+          "Tank",
+          "Caster"
+        ]
+      },
+      {
+        "Title": "Law and Order",
+        "Template": "The {ADJECTIVE} law requires you to {VERB} the rebellious {NOUN}!",
+        "RequiredRoles": [
+          "Tank",
+          "Striker"
+        ]
+      },
+      {
+        "Title": "Crown's Duty",
+        "Template": "It is the {ADJECTIVE} duty of royalty to {VERB} the sacred {NOUN}!",
+        "RequiredRoles": [
+          "Tank",
+          "Support"
+        ]
+      }
+    ]
+  },
+  "NPCChains": {
+    "Barnaby": [
+      {
+        "Title": "Garden's Awakening",
+        "Template": "The {ADJECTIVE} soil needs a strong {NOUN} to truly {VERB} in the morning light.",
+        "Difficulty": 1,
+        "Rewards": {
+          "XP": 50,
+          "Insight": 10,
+          "EvolutionPoints": 2
+        }
+      },
+      {
+        "Title": "Roots of Renewal",
+        "Template": "To {VERB} the ancient tree, we must offer a {ADJECTIVE} {NOUN} to its roots.",
+        "Difficulty": 2,
+        "Rewards": {
+          "XP": 75,
+          "Insight": 15,
+          "EvolutionPoints": 3
+        }
+      },
+      {
+        "Title": "Blossom in the Dark",
+        "Template": "Even a {ADJECTIVE} {NOUN} can {VERB} beautifully if given enough {NOUN}.",
+        "Difficulty": 3,
+        "Rewards": {
+          "XP": 100,
+          "Insight": 20,
+          "EvolutionPoints": 5
+        }
+      }
+    ],
+    "Vlad": [
+      {
+        "Title": "Shadow's Grasp",
+        "Template": "The {ADJECTIVE} darkness will {VERB} any {NOUN} that wanders too far.",
+        "Difficulty": 1,
+        "Rewards": {
+          "XP": 50,
+          "Insight": 10,
+          "EvolutionPoints": 2
+        }
+      },
+      {
+        "Title": "Veil of Night",
+        "Template": "We must {VERB} the {NOUN} before the {ADJECTIVE} shadows consume it entirely.",
+        "Difficulty": 2,
+        "Rewards": {
+          "XP": 75,
+          "Insight": 15,
+          "EvolutionPoints": 3
+        }
+      },
+      {
+        "Title": "Lunar Eclipse",
+        "Template": "During the {ADJECTIVE} eclipse, a bold {NOUN} will {VERB} and awaken the core.",
+        "Difficulty": 3,
+        "Rewards": {
+          "XP": 100,
+          "Insight": 20,
+          "EvolutionPoints": 5
+        }
+      }
+    ],
+    "Pygmalion": [
+      {
+        "Title": "The First Cut",
+        "Template": "A {ADJECTIVE} block of marble is waiting for a {NOUN} to {VERB} it.",
+        "Difficulty": 1,
+        "Rewards": {
+          "XP": 50,
+          "Insight": 10,
+          "EvolutionPoints": 2
+        }
+      },
+      {
+        "Title": "Sculpting Dreams",
+        "Template": "If you carefully {VERB} the {NOUN}, a {ADJECTIVE} masterpiece will emerge.",
+        "Difficulty": 2,
+        "Rewards": {
+          "XP": 75,
+          "Insight": 15,
+          "EvolutionPoints": 3
+        }
+      },
+      {
+        "Title": "Breath of Life",
+        "Template": "The statue needs a {ADJECTIVE} {NOUN} to finally {VERB} and come alive.",
+        "Difficulty": 3,
+        "Rewards": {
+          "XP": 100,
+          "Insight": 20,
+          "EvolutionPoints": 5
+        }
+      }
+    ],
+    "Yorick": [
+      {
+        "Title": "Warrior's Path",
+        "Template": "A true fighter must {VERB} their {NOUN} with {ADJECTIVE} honor.",
+        "Difficulty": 1,
+        "Rewards": {
+          "XP": 50,
+          "Insight": 10,
+          "EvolutionPoints": 2
+        }
+      },
+      {
+        "Title": "Action Alley Brawl",
+        "Template": "The {ADJECTIVE} thugs in the alley want to {VERB} the newest {NOUN}.",
+        "Difficulty": 2,
+        "Rewards": {
+          "XP": 75,
+          "Insight": 15,
+          "EvolutionPoints": 3
+        }
+      },
+      {
+        "Title": "The Final Stand",
+        "Template": "Grab your {ADJECTIVE} {NOUN} and {VERB} until the battle is won!",
+        "Difficulty": 3,
+        "Rewards": {
+          "XP": 100,
+          "Insight": 20,
+          "EvolutionPoints": 5
+        }
+      }
+    ],
+    "Martha": [
+      {
+        "Title": "Wind's Whisper",
+        "Template": "Listen closely... the {ADJECTIVE} wind carries a {NOUN} that wants to {VERB}.",
+        "Difficulty": 1,
+        "Rewards": {
+          "XP": 50,
+          "Insight": 10,
+          "EvolutionPoints": 2
+        }
+      },
+      {
+        "Title": "Knowledge Seeking",
+        "Template": "To {VERB} the old texts, you must find the {ADJECTIVE} {NOUN} of wisdom.",
+        "Difficulty": 2,
+        "Rewards": {
+          "XP": 75,
+          "Insight": 15,
+          "EvolutionPoints": 3
+        }
+      },
+      {
+        "Title": "Spire's Secret",
+        "Template": "At the top of the cloud spire, a {ADJECTIVE} {NOUN} will {VERB} its secrets.",
+        "Difficulty": 3,
+        "Rewards": {
+          "XP": 100,
+          "Insight": 20,
+          "EvolutionPoints": 5
+        }
+      }
+    ],
+    "Nyx": [
+      {
+        "Title": "Punk Rock Protest",
+        "Template": "The {ADJECTIVE} mayor banned my favorite {NOUN}, so I decided to {VERB} it back into existence!",
+        "Difficulty": 1,
+        "Rewards": {
+          "XP": 60,
+          "Insight": 5,
+          "EvolutionPoints": 1
+        }
+      },
+      {
+        "Title": "Distortion Field",
+        "Template": "To {VERB} the status quo, we need a {ADJECTIVE} {NOUN} to blast from the speakers.",
+        "Difficulty": 2,
+        "Rewards": {
+          "XP": 85,
+          "Insight": 10,
+          "EvolutionPoints": 2
+        }
+      },
+      {
+        "Title": "Anarchist's Anthem",
+        "Template": "When the {ADJECTIVE} {NOUN} finally begins to {VERB}, the whole city will listen!",
+        "Difficulty": 3,
+        "Rewards": {
+          "XP": 110,
+          "Insight": 15,
+          "EvolutionPoints": 4
+        }
+      }
+    ],
+    "Zafir": [
+      {
+        "Title": "Carnival Games",
+        "Template": "Step right up! Use a {ADJECTIVE} {NOUN} to {VERB} the tricky targets!",
+        "Difficulty": 1,
+        "Rewards": {
+          "XP": 50,
+          "Insight": 10,
+          "EvolutionPoints": 2
+        }
+      },
+      {
+        "Title": "Sleight of Hand",
+        "Template": "You won't {VERB} the {ADJECTIVE} prize unless you outsmart the {NOUN}.",
+        "Difficulty": 2,
+        "Rewards": {
+          "XP": 75,
+          "Insight": 15,
+          "EvolutionPoints": 3
+        }
+      },
+      {
+        "Title": "The Grand Illusion",
+        "Template": "For my next trick, I will {VERB} a {NOUN} using just a {ADJECTIVE} hat!",
+        "Difficulty": 3,
+        "Rewards": {
+          "XP": 100,
+          "Insight": 20,
+          "EvolutionPoints": 5
+        }
+      }
+    ],
+    "Gribble": [
+      {
+        "Title": "Inventor's Spark",
+        "Template": "My {ADJECTIVE} contraption requires a new {NOUN} to {VERB} properly!",
+        "Difficulty": 1,
+        "Rewards": {
+          "XP": 50,
+          "Insight": 10,
+          "EvolutionPoints": 2
+        }
+      },
+      {
+        "Title": "Gear Grinding",
+        "Template": "If we don't {VERB} this {ADJECTIVE} gear, the entire {NOUN} will explode!",
+        "Difficulty": 2,
+        "Rewards": {
+          "XP": 75,
+          "Insight": 15,
+          "EvolutionPoints": 3
+        }
+      },
+      {
+        "Title": "Masterwork Forge",
+        "Template": "Combine the {ADJECTIVE} {NOUN} with heat to {VERB} the ultimate machine!",
+        "Difficulty": 3,
+        "Rewards": {
+          "XP": 100,
+          "Insight": 20,
+          "EvolutionPoints": 5
+        }
+      }
+    ],
+    "Ozymandias": [
+      {
+        "Title": "Archive's Dust",
+        "Template": "Clear the {ADJECTIVE} dust so we can {VERB} the ancient {NOUN}.",
+        "Difficulty": 1,
+        "Rewards": {
+          "XP": 50,
+          "Insight": 10,
+          "EvolutionPoints": 2
+        }
+      },
+      {
+        "Title": "Decree of the Ruler",
+        "Template": "I command you to {VERB} the {ADJECTIVE} rebels who stole my {NOUN}!",
+        "Difficulty": 2,
+        "Rewards": {
+          "XP": 75,
+          "Insight": 15,
+          "EvolutionPoints": 3
+        }
+      },
+      {
+        "Title": "Legacy Written",
+        "Template": "Ensure my {ADJECTIVE} {NOUN} will {VERB} for generations to come.",
+        "Difficulty": 3,
+        "Rewards": {
+          "XP": 100,
+          "Insight": 20,
+          "EvolutionPoints": 5
+        }
+      }
+    ],
+    "Kael": [
+      {
+        "Title": "Hero's Journey",
+        "Template": "A {ADJECTIVE} hero must {VERB} their fears to claim the {NOUN}.",
+        "Difficulty": 1,
+        "Rewards": {
+          "XP": 50,
+          "Insight": 10,
+          "EvolutionPoints": 2
+        }
+      },
+      {
+        "Title": "The Town Square Defense",
+        "Template": "Defend the {NOUN}! We must {VERB} the {ADJECTIVE} invaders!",
+        "Difficulty": 2,
+        "Rewards": {
+          "XP": 75,
+          "Insight": 15,
+          "EvolutionPoints": 3
+        }
+      },
+      {
+        "Title": "Champion's Valor",
+        "Template": "Show your {ADJECTIVE} spirit and {VERB} the corrupted {NOUN}!",
+        "Difficulty": 3,
+        "Rewards": {
+          "XP": 100,
+          "Insight": 20,
+          "EvolutionPoints": 5
+        }
+      }
+    ],
+    "Chesty": [
+      {
+        "Title": "Mimic's Request",
+        "Template": "Don't just {VERB} at me! Toss me a {ADJECTIVE} {NOUN} to eat!",
+        "Difficulty": 1,
+        "Rewards": {
+          "XP": 50,
+          "Insight": 10,
+          "EvolutionPoints": 2
+        }
+      },
+      {
+        "Title": "Treasure Hunt",
+        "Template": "Inside my {ADJECTIVE} belly is a {NOUN} waiting to {VERB}.",
+        "Difficulty": 2,
+        "Rewards": {
+          "XP": 75,
+          "Insight": 15,
+          "EvolutionPoints": 3
+        }
+      },
+      {
+        "Title": "Companion's Loyalty",
+        "Template": "I will {VERB} any {ADJECTIVE} {NOUN} you ask of me, old friend!",
+        "Difficulty": 3,
+        "Rewards": {
+          "XP": 100,
+          "Insight": 20,
+          "EvolutionPoints": 5
+        }
+      }
+    ],
+    "Ignis": [
+      {
+        "Title": "Spark of Genius",
+        "Template": "The {ADJECTIVE} flame needs a {NOUN} to {VERB} intensely.",
+        "Difficulty": 1,
+        "Rewards": {
+          "XP": 50,
+          "Insight": 10,
+          "EvolutionPoints": 2
+        }
+      },
+      {
+        "Title": "Burning Desire",
+        "Template": "We must {VERB} the {NOUN} before the {ADJECTIVE} fire goes out.",
+        "Difficulty": 2,
+        "Rewards": {
+          "XP": 75,
+          "Insight": 15,
+          "EvolutionPoints": 3
+        }
+      },
+      {
+        "Title": "Inferno Clash",
+        "Template": "When the {ADJECTIVE} volcano erupts, only a {NOUN} can {VERB} the heat!",
+        "Difficulty": 3,
+        "Rewards": {
+          "XP": 100,
+          "Insight": 20,
+          "EvolutionPoints": 5
+        }
+      }
+    ]
+  }
+}
