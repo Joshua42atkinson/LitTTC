@@ -85,10 +85,12 @@ fn paywall_interaction(
         (Changed<Interaction>, With<Button>),
     >,
     mut next_state: ResMut<NextState<GameState>>,
+    state: Res<State<GameState>>,
 ) {
     for (interaction, mut color) in &mut interaction_query {
         match *interaction {
             Interaction::Pressed => {
+                crate::commands::log_state_transition(state.get(), GameState::MainMenu);
                 next_state.set(GameState::MainMenu);
             }
             Interaction::Hovered => {

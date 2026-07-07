@@ -263,8 +263,10 @@ pub fn submit_spelling_word(
     spellbook: &SpellBook,
     demo: &crate::paywall::DemoSettings,
     sheet: &CharacterSheet,
+    state: &State<GameState>,
 ) {
     if demo.is_demo && spellbook.entries.len() >= demo.max_words {
+        crate::commands::log_state_transition(state.get(), GameState::Paywall);
         next_state.set(GameState::Paywall);
         return;
     }
@@ -364,6 +366,7 @@ pub fn submit_spelling_word(
         ));
 
         spelling.word.clear();
+        crate::commands::log_state_transition(state.get(), GameState::Playing);
         next_state.set(GameState::Playing);
     } else {
         warn!("Word not in database: {}. Spawning Unstable Mutant!", spelling.word);
@@ -387,6 +390,7 @@ pub fn submit_spelling_word(
         ));
         
         spelling.word.clear();
+        crate::commands::log_state_transition(state.get(), GameState::Playing);
         next_state.set(GameState::Playing);
     }
 }

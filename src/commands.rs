@@ -76,6 +76,11 @@ pub enum GameCommand {
 #[derive(Resource, Default, Debug, Clone)]
 pub struct LastCommand(pub Option<GameCommand>);
 
+/// Logs a game state transition in a consistent format across systems.
+pub fn log_state_transition(current: &GameState, next: GameState) {
+    info!("State transition: {:?} -> {:?}", current, next);
+}
+
 /// Central command handler: turns high-level player-intent messages into game state changes.
 ///
 /// Input systems should remain thin after Phase 1.3 — they only send `GameCommand` messages.
@@ -126,13 +131,13 @@ pub fn handle_game_commands(
 
             GameCommand::StartBattle => {
                 if *state.get() == GameState::Playing {
-                    crate::battle::start_battle(&mut commands, &db, &curriculum, &mut next_state);
+                    crate::battle::start_battle(&mut commands, &db, &curriculum, &mut next_state, &state);
                 }
             }
 
             GameCommand::StartQuest(npc) => {
                 if *state.get() == GameState::Playing {
-                    crate::quest::start_quest(npc, &db, &curriculum, &mut commands, &mut next_state);
+                    crate::quest::start_quest(npc, &db, &curriculum, &mut commands, &mut next_state, &state);
                 }
             }
 
@@ -140,7 +145,7 @@ pub fn handle_game_commands(
                 match *state.get() {
                     GameState::Playing => {
                         if hand.selected.is_some() {
-                            crate::battle::start_battle(&mut commands, &db, &curriculum, &mut next_state);
+                            crate::battle::start_battle(&mut commands, &db, &curriculum, &mut next_state, &state);
                         } else {
                             warn!("Select a card first!");
                         }
@@ -158,6 +163,7 @@ pub fn handle_game_commands(
                                         &mut spellbook,
                                         &mut next_state,
                                         &sheet,
+                                        &state,
                                     );
                                     if result.is_effective {
                                         commands.spawn(crate::battle::CriticalHitTrigger);
@@ -185,7 +191,7 @@ pub fn handle_game_commands(
                     GameState::Questing => {
                         if let Some(ref mut session) = session_quest {
                             if session.filled_slots.len() >= session.slots.len() {
-                                crate::quest::complete_quest(session, &mut sheet, &mut spellbook, &mut curriculum, &mut next_state, &mut commands);
+                                crate::quest::complete_quest(session, &mut sheet, &mut spellbook, &mut curriculum, &mut next_state, &mut commands, &state);
                             } else if let Some(idx) = hand.selected {
                                 if idx < hand.cards.len() {
                                     let word = &hand.cards[idx];
@@ -210,16 +216,18 @@ pub fn handle_game_commands(
             GameCommand::SkipCard => {
                 match *state.get() {
                     GameState::Playing => {
-                        crate::quest::start_quest("Barnaby", &db, &curriculum, &mut commands, &mut next_state);
+                        crate::quest::start_quest("Barnaby", &db, &curriculum, &mut commands, &mut next_state, &state);
                     }
                     GameState::Battling => {
                         info!("Retreating from battle!");
                         commands.remove_resource::<crate::battle::BattleSession>();
+                        log_state_transition(state.get(), GameState::Playing);
                         next_state.set(GameState::Playing);
                     }
                     GameState::Questing => {
                         info!("Canceling quest!");
                         commands.remove_resource::<crate::quest::QuestSession>();
+                        log_state_transition(state.get(), GameState::Playing);
                         next_state.set(GameState::Playing);
                     }
                     _ => {}
@@ -239,6 +247,7 @@ pub fn handle_game_commands(
                                 &mut spellbook,
                                 &mut next_state,
                                 &sheet,
+                                &state,
                             );
                             if result.is_effective {
                                 commands.spawn(crate::battle::CriticalHitTrigger);
@@ -267,6 +276,7 @@ pub fn handle_game_commands(
             GameCommand::FleeBattle => {
                 if *state.get() == GameState::Battling {
                     commands.remove_resource::<crate::battle::BattleSession>();
+                    log_state_transition(state.get(), GameState::Playing);
                     next_state.set(GameState::Playing);
                 }
             }
@@ -274,6 +284,7 @@ pub fn handle_game_commands(
             GameCommand::CancelQuest => {
                 if *state.get() == GameState::Questing {
                     commands.remove_resource::<crate::quest::QuestSession>();
+                    log_state_transition(state.get(), GameState::Playing);
                     next_state.set(GameState::Playing);
                 }
             }
@@ -281,7 +292,7 @@ pub fn handle_game_commands(
             GameCommand::CompleteQuest => {
                 if let Some(ref mut session) = session_quest {
                     if session.filled_slots.len() >= session.slots.len() {
-                        crate::quest::complete_quest(session, &mut sheet, &mut spellbook, &mut curriculum, &mut next_state, &mut commands);
+                        crate::quest::complete_quest(session, &mut sheet, &mut spellbook, &mut curriculum, &mut next_state, &mut commands, &state);
                     } else {
                         warn!("Cannot complete quest: not all slots are filled!");
                     }
@@ -321,6 +332,7 @@ pub fn handle_game_commands(
                             &*spellbook,
                             &*demo,
                             &*sheet,
+                            &state,
                         );
                     } else {
                         warn!("SubmitSpelling skipped: rendering assets not available");
@@ -358,6 +370,7 @@ pub fn handle_game_commands(
 
             GameCommand::DismissReview => {
                 if *state.get() == GameState::Reviewing {
+                    log_state_transition(state.get(), GameState::Playing);
                     next_state.set(GameState::Playing);
                 }
             }
@@ -366,12 +379,14 @@ pub fn handle_game_commands(
                 if *state.get() == GameState::MainMenu {
                     let _ = std::fs::remove_file("save.json");
                     commands.insert_resource(crate::tutorial::TutorialState { step: 0, active: true });
+                    log_state_transition(state.get(), GameState::Collecting);
                     next_state.set(GameState::Collecting);
                 }
             }
 
             GameCommand::ContinueGame => {
                 if *state.get() == GameState::MainMenu {
+                    log_state_transition(state.get(), GameState::Collecting);
                     next_state.set(GameState::Collecting);
                 }
             }
@@ -381,6 +396,7 @@ pub fn handle_game_commands(
             }
 
             GameCommand::TransitionTo(target) => {
+                log_state_transition(state.get(), target.clone());
                 next_state.set(target.clone());
             }
         }

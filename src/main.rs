@@ -224,6 +224,7 @@ fn check_database_loading(
     loading: Res<LoadingDatabases>,
     assets: Res<Assets<RawJsonAsset>>,
     mut next_state: ResMut<NextState<GameState>>,
+    state: Res<State<GameState>>,
 ) {
     let words = assets.get(&loading.words);
     let syns = assets.get(&loading.syns);
@@ -248,6 +249,7 @@ fn check_database_loading(
         });
 
         info!("Database parsed successfully. Transitioning to MainMenu.");
+        crate::commands::log_state_transition(state.get(), GameState::MainMenu);
         next_state.set(GameState::MainMenu);
     }
 }

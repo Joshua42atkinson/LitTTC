@@ -195,17 +195,18 @@ fn handle_spatial_button_pinches(
                 match action.0.as_str() {
                     "Construct" => {
                         if *state.get() == crate::components::GameState::Playing {
+                            crate::commands::log_state_transition(state.get(), crate::components::GameState::Constructing);
                             next_state.set(crate::components::GameState::Constructing);
                         }
                     }
                     "Quest" => {
                         if *state.get() == crate::components::GameState::Playing {
-                            crate::quest::start_quest("Barnaby", &db, &curriculum, &mut commands, &mut next_state);
+                            crate::quest::start_quest("Barnaby", &db, &curriculum, &mut commands, &mut next_state, &state);
                         }
                     }
                     "Battle" => {
                         if *state.get() == crate::components::GameState::Playing {
-                            crate::battle::start_battle(&mut commands, &db, &curriculum, &mut next_state);
+                            crate::battle::start_battle(&mut commands, &db, &curriculum, &mut next_state, &state);
                         }
                     }
                     _ => {}

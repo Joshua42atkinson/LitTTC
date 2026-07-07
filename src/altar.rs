@@ -106,6 +106,7 @@ fn handle_summon_pinch(
                 
                 // If word is not empty, trigger summon
                 if !spelling.word.is_empty() {
+                    crate::commands::log_state_transition(state.get(), GameState::Reviewing);
                     next_state.set(GameState::Reviewing);
                 }
             } else {

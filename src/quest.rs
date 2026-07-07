@@ -22,6 +22,7 @@ pub fn start_quest(
     curriculum: &CurriculumManager,
     commands: &mut Commands,
     next_state: &mut NextState<GameState>,
+    state: &State<GameState>,
 ) {
     if let Some(quests) = db.quests.npc_chains.get(npc_name) {
         let target_diff = curriculum.active_grade;
@@ -61,6 +62,7 @@ pub fn start_quest(
         });
 
         info!("Started quest: {} from NPC: {}", quest.title, npc_name);
+        crate::commands::log_state_transition(state.get(), GameState::Questing);
         next_state.set(GameState::Questing);
     }
 }
@@ -84,6 +86,7 @@ pub fn complete_quest(
     curriculum: &mut CurriculumManager,
     next_state: &mut NextState<GameState>,
     commands: &mut Commands,
+    state: &State<GameState>,
 ) {
     if session.filled_slots.len() < session.slots.len() {
         warn!("Cannot complete quest: not all slots are filled!");
@@ -140,6 +143,7 @@ pub fn complete_quest(
     }
 
     commands.remove_resource::<QuestSession>();
+    crate::commands::log_state_transition(state.get(), GameState::Playing);
     next_state.set(GameState::Playing);
 }
 

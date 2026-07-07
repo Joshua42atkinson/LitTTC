@@ -95,7 +95,8 @@ fn test_quest_progression() {
     let mut world2 = World::new();
     let mut test_commands = Commands::new(&mut queue2, &world2);
     let mut curriculum = quest::CurriculumManager::default();
-    
+    let state = State::new(GameState::Questing);
+
     quest::complete_quest(
         &session,
         &mut sheet,
@@ -103,6 +104,7 @@ fn test_quest_progression() {
         &mut curriculum,
         &mut test_next_state,
         &mut test_commands,
+        &state,
     );
     
     assert_eq!(sheet.total_xp, npc_quest.rewards.xp as u64);
@@ -121,15 +123,16 @@ fn test_battle_combat_mechanics() {
     let mut spellbook = SpellBook::default();
     let mut next_state = NextState::default();
     let sheet = CharacterSheet::default();
-    
+    let state = State::new(GameState::Battling);
+
     // Play a word with high semantic distance (effective): "abc" vs "abandoned"
-    let result_1 = battle::play_battle_card("abc", &mut session, &db, &mut spellbook, &mut next_state, &sheet);
+    let result_1 = battle::play_battle_card("abc", &mut session, &db, &mut spellbook, &mut next_state, &sheet, &state);
     assert!(result_1.is_effective, "Playing abc should be semantically effective");
     assert_eq!(session.typo_health, 32, "Effective card should damage typo");
     assert_eq!(session.player_health, 100, "Effective card should not damage player");
-    
+
     // Play a word with low semantic distance (ineffective): "abandoned" vs "abandoned"
-    let result_2 = battle::play_battle_card("abandoned", &mut session, &db, &mut spellbook, &mut next_state, &sheet);
+    let result_2 = battle::play_battle_card("abandoned", &mut session, &db, &mut spellbook, &mut next_state, &sheet, &state);
     assert!(!result_2.is_effective, "Playing identical word should be ineffective");
     assert_eq!(session.typo_health, 20, "Ineffective card should do minor damage");
     assert_eq!(session.player_health, 80, "Ineffective card should result in typo counter-attack");
@@ -148,9 +151,10 @@ fn test_rhetoric_robot_combat_mechanics() {
     let mut next_state = NextState::default();
     let mut sheet = CharacterSheet::default();
     sheet.active_summon_class = SummonClass::RhetoricRobot;
-    
+    let state = State::new(GameState::Battling);
+
     // Play a word. Rhetoric Robot triggers social combat.
-    let result = battle::play_battle_card("abc", &mut session, &db, &mut spellbook, &mut next_state, &sheet);
+    let result = battle::play_battle_card("abc", &mut session, &db, &mut spellbook, &mut next_state, &sheet, &state);
     
     assert!(result.social_combat_triggered, "Rhetoric Robot should trigger social combat");
     assert!(result.is_effective, "Rhetoric attack should be highly effective");

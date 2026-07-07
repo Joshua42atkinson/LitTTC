@@ -27,6 +27,7 @@ pub fn start_battle(
     db: &GameDatabase,
     curriculum: &crate::quest::CurriculumManager,
     next_state: &mut NextState<GameState>,
+    state: &State<GameState>,
 ) {
     use rand::seq::SliceRandom;
     use rand::thread_rng;
@@ -50,6 +51,7 @@ pub fn start_battle(
     });
 
     info!("A wild Typo ({}) emerges! Deduce its semantic weakness based on its stats!", typo_word.to_uppercase());
+    crate::commands::log_state_transition(state.get(), GameState::Battling);
     next_state.set(GameState::Battling);
 }
 
@@ -66,6 +68,7 @@ pub fn play_battle_card(
     spellbook: &mut SpellBook,
     next_state: &mut NextState<GameState>,
     sheet: &CharacterSheet,
+    state: &State<GameState>,
 ) -> BattleResult {
     let lower_typo = session.typo_word.to_lowercase();
     let lower_played = played_word.to_lowercase();
@@ -168,9 +171,11 @@ pub fn play_battle_card(
     if session.typo_health <= 0 {
         info!("Victory! The Typo has been corrected and clean spelling returns to the sector.");
         spellbook.upgrade_mastery(played_word, MasteryLevel::Mastered);
+        crate::commands::log_state_transition(state.get(), GameState::Reviewing);
         next_state.set(GameState::Reviewing);
     } else if session.player_health <= 0 {
         warn!("Defeat! The Typo overrode your spelling defense. Retreating to town square.");
+        crate::commands::log_state_transition(state.get(), GameState::Playing);
         next_state.set(GameState::Playing);
     }
 

@@ -59,7 +59,7 @@
 ## Phase 1.5: Mechanical Tasks (Claude Code local — overnight)
 
 ### P1.5.1: Add GameState transitions logging
-- [ ] Add `info!()` log statements at every `next_state.set()` call
+- [x] Add `info!()` log statements at every `next_state.set()` call
   - Search for `next_state.set` in all .rs files
   - Add: `info!("State transition: {:?} → {:?}", current_state, new_state);`
   - Run cargo test to verify

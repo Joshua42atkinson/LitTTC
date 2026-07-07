@@ -35,6 +35,7 @@ pub fn draw_cards(
     }
 
     if hand.cards.is_empty() {
+        crate::commands::log_state_transition(state.get(), GameState::Reviewing);
         next_state.set(GameState::Reviewing);
     }
 }
