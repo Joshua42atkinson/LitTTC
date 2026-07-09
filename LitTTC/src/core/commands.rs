@@ -18,6 +18,8 @@ pub enum GameCommand {
     AddLetter(char),
     /// Remove the last letter from the current spelling.
     Backspace,
+    /// Scan a world object in the 2D overworld (flat2d) to harvest its word.
+    ScanObject(String),
 
     // ─── HAND / CARD INTERACTIONS ───────────────────────────────────────
     /// Select the card at the given index in the player's hand.
@@ -96,6 +98,7 @@ pub struct CommandContext<'w> {
     pub session_battle: Option<ResMut<'w, crate::battle::BattleSession>>,
     pub session_quest: Option<ResMut<'w, crate::quest::QuestSession>>,
     pub hand: ResMut<'w, crate::components::Hand>,
+    pub deck: Option<ResMut<'w, crate::components::Deck>>,
     pub spellbook: ResMut<'w, crate::components::SpellBook>,
     pub db: Res<'w, crate::database::GameDatabase>,
     pub grade_manager: ResMut<'w, crate::quest::GradeManager>,
@@ -125,6 +128,7 @@ pub fn handle_game_commands(
         mut session_battle,
         mut session_quest,
         mut hand,
+        mut deck,
         mut spellbook,
         db,
         mut grade_manager,
@@ -410,6 +414,23 @@ pub fn handle_game_commands(
             GameCommand::Backspace => {
                 if let Some(c) = current_spelling.word.pop() {
                     letter_stash.letters.push(c);
+                }
+            }
+
+            GameCommand::ScanObject(word) => {
+                if cfg!(feature = "flat2d") && *state.get() == GameState::Exploring {
+                    let upper = word.to_uppercase();
+                    letter_stash.letters.clear();
+                    current_spelling.word.clear();
+                    letter_stash.letters.extend(upper.chars());
+                    // Make sure the harvested word is available in the deck after spelling.
+                    if let Some(ref mut d) = deck {
+                        if !d.cards.contains(&upper) {
+                            d.cards.push(upper.clone());
+                        }
+                    }
+                    log_state_transition(state.get(), GameState::Constructing);
+                    next_state.set(GameState::Constructing);
                 }
             }
 

@@ -211,6 +211,69 @@ pub fn cleanup_overworld(
     commands.remove_resource::<WorldBounds>();
 }
 
+const INTERACT_RADIUS: f32 = 50.0;
+const AVATAR_SIZE: f32 = 32.0;
+const TYPO_SIZE: f32 = 32.0;
+
+pub fn handle_overworld_interactions(
+    player: Single<&Transform, With<PlayerAvatar>>,
+    scannables: Query<(&Transform, &ScannableObject)>,
+    npcs: Query<(&Transform, &NpcEntity)>,
+    typos: Query<&Transform, With<WildTypoEntity>>,
+    keys: Res<ButtonInput<KeyCode>>,
+    mut writer: MessageWriter<crate::commands::GameCommand>,
+    state: Res<State<GameState>>,
+    mut next_state: ResMut<NextState<GameState>>,
+) {
+    if *state.get() != GameState::Exploring {
+        return;
+    }
+
+    let player_pos = player.translation.xy();
+
+    // Battle on contact with a wild typo.
+    for typo_tf in typos.iter() {
+        let typo_pos = typo_tf.translation.xy();
+        let dx = (player_pos.x - typo_pos.x).abs();
+        let dy = (player_pos.y - typo_pos.y).abs();
+        if dx < (AVATAR_SIZE + TYPO_SIZE) * 0.5 && dy < (AVATAR_SIZE + TYPO_SIZE) * 0.5 {
+            crate::commands::log_state_transition(&GameState::Exploring, GameState::Battling);
+            next_state.set(GameState::Battling);
+            return;
+        }
+    }
+
+    if keys.just_pressed(KeyCode::KeyE) {
+        // Find nearest scannable object.
+        let mut nearest_scan: Option<(&ScannableObject, f32)> = None;
+        for (tf, obj) in scannables.iter() {
+            let dist = tf.translation.xy().distance(player_pos);
+            if dist < INTERACT_RADIUS {
+                nearest_scan = Some((obj, dist));
+            }
+        }
+        if let Some((obj, _)) = nearest_scan {
+            writer.write(crate::commands::GameCommand::ScanObject(obj.word.clone()));
+            return;
+        }
+
+        // Find nearest NPC.
+        let mut nearest_npc: Option<&NpcEntity> = None;
+        let mut nearest_dist = f32::MAX;
+        for (tf, npc) in npcs.iter() {
+            let dist = tf.translation.xy().distance(player_pos);
+            if dist < INTERACT_RADIUS && dist < nearest_dist {
+                nearest_dist = dist;
+                nearest_npc = Some(npc);
+            }
+        }
+        if let Some(npc) = nearest_npc {
+            writer.write(crate::commands::GameCommand::StartQuest(npc.npc_name.clone()));
+            return;
+        }
+    }
+}
+
 pub struct OverworldPlugin;
 
 #[cfg(feature = "flat2d")]
@@ -222,6 +285,7 @@ impl Plugin for OverworldPlugin {
                 clamp_avatar_to_bounds.after(move_avatar),
                 companion_follow.after(clamp_avatar_to_bounds),
                 update_overworld_camera.after(companion_follow),
+                handle_overworld_interactions,
            ).run_if(in_state(GameState::Exploring)))
            .add_systems(OnExit(GameState::Exploring), cleanup_overworld);
     }

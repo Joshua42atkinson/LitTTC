@@ -380,15 +380,15 @@ Added unit and integration tests across the engine. Test count: 39 → 128 (48 u
 - [x] Hide the old HUD action buttons during `Exploring`.
 
 ### Phase B — World Entities
-- [ ] Add `ScannableObject` component with a word label (e.g., "rock", "tree", "river").
-- [ ] Add an interaction radius check and prompt: *"Press E to scan"*.
-- [ ] On scan, transition to `Constructing` with a stash seeded from the object's word.
-- [ ] After a valid spelling, transition back to `Exploring` and add the card to the deck.
-- [ ] Add `NpcEntity` component with an `npc_name` mapping to `lore_db.json`.
-- [ ] On interact, show a dialogue panel and offer a quest.
-- [ ] Add `WildTypoEntity` component that roams or stands in place.
-- [ ] On avatar-typo overlap, transition to `Battling`.
-- [ ] Add 2-3 districts using background color/rect zones (Garden, Shadow Library, Irony Junction).
+- [x] Add `ScannableObject` component with a word label (e.g., "rock", "tree", "river").
+- [/] Add an interaction radius check and prompt: *"Press E to scan"* — radius check implemented; visual prompt pending.
+- [x] On scan, transition to `Constructing` with a stash seeded from the object's word.
+- [x] After a valid spelling, transition back to `Exploring` and add the card to the deck.
+- [x] Add `NpcEntity` component with an `npc_name` mapping to `lore_db.json`.
+- [/] On interact, show a dialogue panel and offer a quest — quest starts directly; dedicated dialogue panel pending.
+- [x] Add `WildTypoEntity` component that roams or stands in place.
+- [x] On avatar-typo overlap, transition to `Battling`.
+- [x] Add 2-3 districts using background color/rect zones (Garden, Shadow Library, Irony Junction).
 
 ### Phase C — Thesaurus Dance Combat
 - [ ] Replace the current single-card battle with the sentence-crafting system.
