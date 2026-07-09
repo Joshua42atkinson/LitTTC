@@ -2,9 +2,111 @@
 
 > Every piece of work needed to ship the demo and beyond.
 > Ordered by dependency. Vision statements provide context for each phase.
-> Last updated: July 2026
+> Last updated: July 2026 — STRATEGIC PIVOT: 4-Pillar Combat System
 
 ---
+
+## STRATEGIC PIVOT: NEW PHASED EXECUTION
+
+**CRITICAL:** All legacy phases (0-10) are SUSPENDED. We are pivoting to a 4-phase execution plan focused on validating the core combat loop in 2D before any XR integration.
+
+**Current Focus:** PHASE 1 — 2D Gray-Box Combat Slice
+
+---
+
+## PHASE 1: The 2D "Gray-Box" Combat Slice (IMMEDIATE FOCUS)
+
+**Vision:** Validate the core combat loop on a flat screen. If the game isn't fun with 2D squares, 3D VR won't save it.
+
+### 1.1 Hardcoded Micro-Deck
+- [ ] **1.1.1** Create `MICRO_DECK` constant in `deck.rs` — 20 hardcoded words:
+  - 10 Nouns: wolf, wall, sword, shield, dragon, castle, river, mountain, forest, star
+  - 5 Verbs: strikes, defends, heals, burns, freezes
+  - 5 Adjectives: searing, impregnable, swift, ancient, radiant
+- [ ] **1.1.2** Add part-of-speech tags to each word (Noun/Verb/Adjective)
+- [ ] **1.1.3** Add synonym/antonym pairs for testing:
+  - hot ↔ cold, fast ↔ slow, big ↔ small, bright ↔ dark, strong ↔ weak
+- [ ] **1.1.4** Create `initialize_micro_deck()` function to load hardcoded deck
+- [ ] **1.1.5** Modify `initialize_player_deck()` to use micro-deck in Phase 1 mode
+
+### 1.2 2D Battle UI Scene
+- [ ] **1.2.1** Create `spawn_battle_ui_2d_graybox()` in `battle.rs`
+- [ ] **1.2.2** Target Dummy UI:
+  - Display "PROMPT WORD: [WORD]" at top center
+  - HP bar (100 HP max) with health text
+  - Visual feedback when damaged (flash red)
+- [ ] **1.2.3** Player Hand UI:
+  - 5 card buttons at bottom of screen
+  - Each button shows word text and part-of-speech icon
+  - Highlight selected card
+  - Click to play card to altar
+- [ ] **1.2.4** Altar Drop-Zone UI:
+  - Central drop zone (clickable area)
+  - Show "Active Card: [WORD]" when card placed
+  - "CAST SPELL" button to submit
+- [ ] **1.2.5** Slime Face UI:
+  - 4 emotion buttons: Fierce, Joyful, Calm, Angry
+  - Show current active face with icon
+  - Click to change face before casting
+- [ ] **1.2.6** Combat Log UI:
+  - Scrollable text panel on right side
+  - Log each action with damage math
+  - Color-code: green (effective), red (ineffective), gold (critical)
+
+### 1.3 Thesaurus Battle Math Implementation
+- [ ] **1.3.1** Implement `calculate_synonym_distance(word1, word2)` using existing `semantic_distance()`
+- [ ] **1.3.2** Implement `is_synonym(word1, word2)` — distance < 2.0
+- [ ] **1.3.3** Implement `is_antonym(word1, word2)` — distance > 4.0
+- [ ] **1.3.4** Damage formula:
+  - Base damage: 25
+  - Synonym multiplier: 2.0x
+  - Antonym multiplier: 1.5x + (distance - 4.0) × 0.2
+  - Normal: 1.0x
+- [ ] **1.3.5** Log damage calculation to combat log with full math breakdown
+- [ ] **1.3.6** Add visual feedback: screen shake on critical, particle burst on hit
+
+### 1.4 Face/Emotion Modifier System
+- [ ] **1.4.1** Create `SlimeFace` enum: Fierce, Joyful, Calm, Angry
+- [ ] **1.4.2** Create `ActiveFace` resource to track current face
+- [ ] **1.4.3** Implement face modifiers to `WordStats`:
+  - Fierce: +20% intensity, +10% dominance
+  - Joyful: +20% valence, +10% health
+  - Calm: +20% concreteness, +10% defense
+  - Angry: +30% intensity, -10% valence (high risk/reward)
+- [ ] **1.4.4** Apply face modifier in damage calculation
+- [ ] **1.4.5** Update combat log to show face modifier effect
+- [ ] **1.4.6** Add face change animation (smooth transition between icons)
+
+### 1.5 Combat Loop Integration
+- [ ] **1.5.1** Implement `start_graybox_battle()` — spawn target dummy with random prompt word
+- [ ] **1.5.2** Implement `play_card_to_altar(word)` — move card from hand to altar
+- [ ] **1.5.3** Implement `cast_spell()` — calculate damage, apply to dummy, log result
+- [ ] **1.5.4** Implement enemy turn — dummy attacks with random word from deck
+- [ ] **1.5.5** Implement victory condition — dummy HP ≤ 0
+- [ ] **1.5.6** Implement defeat condition — player HP ≤ 0
+- [ ] **1.5.7** Add "Next Battle" button to restart loop
+
+### 1.6 Testing & Validation
+- [ ] **1.6.1** Add integration test: synonym attack deals 2.0x damage
+- [ ] **1.6.2** Add integration test: antonym attack deals 1.5x+ damage
+- [ ] **1.6.3** Add integration test: face modifier alters damage correctly
+- [ ] **1.6.4** Add integration test: combat log shows full math breakdown
+- [ ] **1.6.5** Manual playtest: complete 10 battles, measure fun factor
+- [ ] **1.6.6** Adjust damage multipliers based on playtest feedback
+- [ ] **1.6.7** Verify 1-minute combat loop is replayable
+
+### 1.7 Phase 1 Success Criteria
+- [ ] **1.7.1** All integration tests pass
+- [ ] **1.7.2** Zero compiler warnings
+- [ ] **1.7.3** Combat loop is playable from start to finish
+- [ ] **1.7.4** Synonym vs Antonym behavior is visually clear
+- [ ] **1.7.5** Face modification has visible impact on gameplay
+- [ ] **1.7.6** Combat log provides clear feedback on all mechanics
+- [ ] **1.7.7** 5 consecutive playtesters report "I want to play again"
+
+---
+
+## LEGACY PHASES (SUSPENDED — DO NOT WORK ON THESE)
 
 ## Phase 0: Safety Landmines (Do First or Project Dies)
 

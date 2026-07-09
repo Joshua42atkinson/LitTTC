@@ -6,9 +6,6 @@ license = "Proprietary"
 authors = ["Joshua Atkinson"]
 description = "LitTCG — Literary Trading Card Game: spell words to summon pets and battle typos"
 
-[profile.dev]
-opt-level = 1
-
 [lib]
 crate-type = ["lib", "cdylib"]
 name = "lit_tcg"
@@ -26,7 +23,10 @@ flat2d = [
     "bevy/bevy_window",
     "bevy/bevy_text",
     "bevy/bevy_ui",
+    "bevy/bevy_ui_render",
     "bevy/bevy_sprite",
+    "bevy/bevy_sprite_render",
+    "bevy/bevy_image",
     "bevy/bevy_log",
     "bevy/bevy_state",
     "bevy/default_font",
@@ -97,6 +97,7 @@ xr = [
     "dep:bevy_mod_xr",
     "dep:bevy_mod_openxr",
 ]
+graybox = []
 tts = ["dep:reqwest"]
 
 [target.'cfg(target_arch = "wasm32")'.dependencies]
@@ -109,6 +110,7 @@ bevy = { version = "0.18.1", default-features = false, features = [
     "bevy_post_process", "bevy_audio",
     "bevy_asset", "bevy_scene", "bevy_text", "bevy_window", "bevy_mesh",
     "bevy_ui", "bevy_log", "png", "webgl2", "zstd_rust", "debug",
+    "wav", "vorbis",
 ] }
 bevy_reflect = "0.18.1"
 log = "0.4"
@@ -167,7 +169,3 @@ permissions = [
 path = "/home/joshua/.android/debug.keystore"
 keystore_password = "android"
 
-[patch.crates-io]
-# Patch jni 0.22.4 to avoid a startup panic on Android where the JNI exception
-# clears between exception_check() and exception_occurred().
-jni = { path = "../crates/jni-0.22.4-android-fix" }

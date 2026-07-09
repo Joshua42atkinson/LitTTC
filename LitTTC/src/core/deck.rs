@@ -3,6 +3,157 @@ use bevy::prelude::*;
 use crate::components::*;
 use crate::database::GameDatabase;
 
+/// Part of speech for Phase 1 micro-deck words
+#[derive(Clone, Copy, PartialEq, Eq, Debug)]
+pub enum PartOfSpeech {
+    Noun,
+    Verb,
+    Adjective,
+}
+
+/// Micro-deck word for Phase 1 gray-box combat
+#[derive(Clone, Debug)]
+pub struct MicroDeckWord {
+    pub word: String,
+    pub part_of_speech: PartOfSpeech,
+    pub synonyms: Vec<String>,
+    pub antonyms: Vec<String>,
+}
+
+/// Initialize the micro-deck for Phase 1 gray-box combat
+pub fn initialize_micro_deck() -> Vec<MicroDeckWord> {
+    vec![
+        // Nouns (10)
+        MicroDeckWord {
+            word: "wolf".to_string(),
+            part_of_speech: PartOfSpeech::Noun,
+            synonyms: vec!["beast".to_string(), "predator".to_string()],
+            antonyms: vec!["prey".to_string()],
+        },
+        MicroDeckWord {
+            word: "wall".to_string(),
+            part_of_speech: PartOfSpeech::Noun,
+            synonyms: vec!["barrier".to_string(), "fortress".to_string()],
+            antonyms: vec!["opening".to_string()],
+        },
+        MicroDeckWord {
+            word: "sword".to_string(),
+            part_of_speech: PartOfSpeech::Noun,
+            synonyms: vec!["blade".to_string(), "weapon".to_string()],
+            antonyms: vec!["shield".to_string()],
+        },
+        MicroDeckWord {
+            word: "shield".to_string(),
+            part_of_speech: PartOfSpeech::Noun,
+            synonyms: vec!["armor".to_string(), "protection".to_string()],
+            antonyms: vec!["weapon".to_string()],
+        },
+        MicroDeckWord {
+            word: "dragon".to_string(),
+            part_of_speech: PartOfSpeech::Noun,
+            synonyms: vec!["beast".to_string(), "monster".to_string()],
+            antonyms: vec![],
+        },
+        MicroDeckWord {
+            word: "castle".to_string(),
+            part_of_speech: PartOfSpeech::Noun,
+            synonyms: vec!["fortress".to_string(), "stronghold".to_string()],
+            antonyms: vec![],
+        },
+        MicroDeckWord {
+            word: "river".to_string(),
+            part_of_speech: PartOfSpeech::Noun,
+            synonyms: vec!["stream".to_string(), "waterway".to_string()],
+            antonyms: vec![],
+        },
+        MicroDeckWord {
+            word: "mountain".to_string(),
+            part_of_speech: PartOfSpeech::Noun,
+            synonyms: vec!["peak".to_string(), "summit".to_string()],
+            antonyms: vec!["valley".to_string()],
+        },
+        MicroDeckWord {
+            word: "forest".to_string(),
+            part_of_speech: PartOfSpeech::Noun,
+            synonyms: vec!["woods".to_string(), "jungle".to_string()],
+            antonyms: vec![],
+        },
+        MicroDeckWord {
+            word: "star".to_string(),
+            part_of_speech: PartOfSpeech::Noun,
+            synonyms: vec!["sun".to_string(), "celestial".to_string()],
+            antonyms: vec![],
+        },
+        // Verbs (5)
+        MicroDeckWord {
+            word: "strikes".to_string(),
+            part_of_speech: PartOfSpeech::Verb,
+            synonyms: vec!["attacks".to_string(), "hits".to_string()],
+            antonyms: vec!["defends".to_string()],
+        },
+        MicroDeckWord {
+            word: "defends".to_string(),
+            part_of_speech: PartOfSpeech::Verb,
+            synonyms: vec!["protects".to_string(), "guards".to_string()],
+            antonyms: vec!["attacks".to_string()],
+        },
+        MicroDeckWord {
+            word: "heals".to_string(),
+            part_of_speech: PartOfSpeech::Verb,
+            synonyms: vec!["cures".to_string(), "restores".to_string()],
+            antonyms: vec!["wounds".to_string()],
+        },
+        MicroDeckWord {
+            word: "burns".to_string(),
+            part_of_speech: PartOfSpeech::Verb,
+            synonyms: vec!["scorches".to_string(), "ignites".to_string()],
+            antonyms: vec!["freezes".to_string()],
+        },
+        MicroDeckWord {
+            word: "freezes".to_string(),
+            part_of_speech: PartOfSpeech::Verb,
+            synonyms: vec!["chills".to_string(), "ices".to_string()],
+            antonyms: vec!["burns".to_string()],
+        },
+        // Adjectives (5)
+        MicroDeckWord {
+            word: "searing".to_string(),
+            part_of_speech: PartOfSpeech::Adjective,
+            synonyms: vec!["scorching".to_string(), "blazing".to_string()],
+            antonyms: vec!["freezing".to_string()],
+        },
+        MicroDeckWord {
+            word: "impregnable".to_string(),
+            part_of_speech: PartOfSpeech::Adjective,
+            synonyms: vec!["unbreakable".to_string(), "invincible".to_string()],
+            antonyms: vec!["weak".to_string()],
+        },
+        MicroDeckWord {
+            word: "swift".to_string(),
+            part_of_speech: PartOfSpeech::Adjective,
+            synonyms: vec!["fast".to_string(), "quick".to_string()],
+            antonyms: vec!["slow".to_string()],
+        },
+        MicroDeckWord {
+            word: "ancient".to_string(),
+            part_of_speech: PartOfSpeech::Adjective,
+            synonyms: vec!["old".to_string(), "aged".to_string()],
+            antonyms: vec!["modern".to_string()],
+        },
+        MicroDeckWord {
+            word: "radiant".to_string(),
+            part_of_speech: PartOfSpeech::Adjective,
+            synonyms: vec!["bright".to_string(), "glowing".to_string()],
+            antonyms: vec!["dark".to_string()],
+        },
+    ]
+}
+
+/// Get micro-deck words as strings for UI
+pub fn get_micro_deck_words() -> Vec<String> {
+    initialize_micro_deck().iter().map(|w| w.word.clone()).collect()
+}
+
 /// Refills the player's hand from the deck and records encounters in the spellbook.
 pub fn draw_cards(
     mut deck: ResMut<Deck>,
@@ -13,7 +164,12 @@ pub fn draw_cards(
     mut next_state: ResMut<NextState<GameState>>,
     state: Res<State<GameState>>,
 ) {
-    if *state.get() != GameState::Playing && *state.get() != GameState::Battling {
+    let allowed_states = [
+        GameState::Playing,
+        GameState::Battling,
+        GameState::Exploring,
+    ];
+    if !allowed_states.contains(state.get()) {
         return;
     }
 

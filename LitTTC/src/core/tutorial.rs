@@ -1,5 +1,6 @@
 // tutorial.rs - 3 Step Onboarding
 use bevy::prelude::*;
+#[allow(unused_imports)]
 use crate::components::*;
 
 #[derive(Resource, Default)]
@@ -17,7 +18,7 @@ impl Plugin for TutorialPlugin {
     fn build(&self, app: &mut App) {
         app.init_resource::<TutorialState>();
         
-        #[cfg(not(feature = "xr"))]
+        #[cfg(all(not(feature = "xr"), not(feature = "flat2d")))]
         app.add_systems(Update, update_tutorial_2d.run_if(in_state(GameState::Collecting)));
         
         #[cfg(feature = "xr")]
@@ -25,7 +26,7 @@ impl Plugin for TutorialPlugin {
     }
 }
 
-#[cfg(not(feature = "xr"))]
+#[cfg(all(not(feature = "xr"), not(feature = "flat2d")))]
 fn update_tutorial_2d(
     mut commands: Commands,
     mut state: ResMut<TutorialState>,

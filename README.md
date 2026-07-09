@@ -8,6 +8,8 @@ LitTCG is a Bevy 0.18.1 XR EdTech game where kids spell real English words to su
 - ⚔️ **Battle Wild Typos** — Use synonyms, antonyms, and etymology roots in turn-based combat.
 - 🏛️ **Complete Grammar Quests** — Fill Mad-Lib slots with the right parts of speech to help NPCs.
 - 🎴 **Collect & Evolve** — Master words to evolve pets and unlock golden auras and dream poetry.
+- 🐾 **Persistent Companion** — Choose one pet to follow you through the world as an emotional anchor.
+- 🎵 **Procedural Music** — State-driven soundtrack that crossfades between menu, explore, and battle themes.
 
 ## Why LitTCG?
 
@@ -50,6 +52,9 @@ Alpha — engine complete, building product surface.
 - ✅ Semantic distance combat
 - ✅ Mad-Lib quest engine
 - ✅ Local save/load (COPPA-safe)
+- ✅ Persistent companion (3D/XR camera follow)
+- ✅ Pet lore shown in HUD and collection
+- ✅ State-driven procedural music (`music.rs` + `scripts/generate_music.py`)
 - 🔄 Pet card reveal animation (P0 in progress)
 - 🔄 Collection screen + roster selection
 
@@ -58,9 +63,13 @@ Alpha — engine complete, building product surface.
 For the full design doc, marketing plan, and roadmap, see the workspace root:
 
 - [`../GDD.md`](../GDD.md) — Game Design Document
+- [`../ROADMAP.md`](../ROADMAP.md) — Development phases
+- [`../ARCHITECTURE.md`](../ARCHITECTURE.md) — ECS architecture and data flow
+- [`../TECHNICAL_MANUAL.md`](../TECHNICAL_MANUAL.md) — Build pipeline and integration patterns
+- [`../docs/TAO_OF_FUN_REVIEW.md`](../docs/TAO_OF_FUN_REVIEW.md) — Fun-first design lens
+- [`../docs/MUSIC_DESIGN.md`](../docs/MUSIC_DESIGN.md) — Music and sound design proposal
 - [`../MARKETING_PLAN.md`](../MARKETING_PLAN.md) — Marketing strategy
 - [`../BRAND_GUIDE.md`](../BRAND_GUIDE.md) — Brand voice and visual identity
-- [`../ROADMAP.md`](../ROADMAP.md) — Development phases
 
 ## License
 

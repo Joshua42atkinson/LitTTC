@@ -2,7 +2,7 @@
 
 LitTCG runs on **Bevy 0.18.1**, leveraging an Entity Component System (ECS) to handle the complex state interactions required for a gamified XR literacy tool.
 
-## 1. Module Structure (24 source files)
+## 1. Module Structure (38 source files)
 
 ### Core
 - `src/main.rs` — Desktop entry point. Wires plugins, resources, and systems.
@@ -42,24 +42,28 @@ LitTCG runs on **Bevy 0.18.1**, leveraging an Entity Component System (ECS) to h
 
 ### World
 - `src/time_cycle.rs` — Day/Night cycle and timing states. `TimeCyclePlugin`.
+- `src/companion.rs` — Persistent player companion. Spawns the chosen pet from `SpellBookEntry::companion` and makes it follow the camera in 3D / XR. `CompanionPlugin`.
+- `src/music.rs` — State-driven adaptive soundtrack. Crossfades between menu, world, and battle stems while respecting `GameSettings.music_volume`. `MusicPlugin`.
 
 ## 2. GameState Machine
 
 ```
-Loading → MainMenu → Collecting → Constructing → Playing → Questing/Battling → Reviewing → (loop)
-                                                                  ↓
-                                                              Paywall (demo)
+Loading → MainMenu → Collecting → Constructing → RevealingPet → Playing → Questing/Battling → Reviewing → (loop)
+                                                                                            ↓
+                                                                                        Paywall (demo)
 ```
 
 1. **`Loading`** — Database asset loading and parsing
 2. **`MainMenu`** — Initial user routing
 3. **`Collecting`** — Player explores 3D space to collect `LetterCrystal` entities
 4. **`Constructing`** — Keyboard/spatial input captures spelling attempts
-5. **`Playing`** — Default interaction state, card selection
-6. **`Questing`** — NPC Mad-Lib quest interaction
-7. **`Battling`** — Semantic synonym/antonym combat
-8. **`Reviewing`** — End-of-session summary
-9. **`Paywall`** — Demo restriction barrier
+5. **`RevealingPet`** — Card flip / pet reveal animation and SFX
+6. **`PetCollection`** — Browse and manage collected pets (set companion, sort)
+7. **`Playing`** — Default interaction state, card selection
+8. **`Questing`** — NPC Mad-Lib quest interaction
+9. **`Battling`** — Semantic synonym/antonym combat
+10. **`Reviewing`** — End-of-session summary
+11. **`Paywall`** — Demo restriction barrier
 
 ## 3. Data Flow: Word to Pet
 

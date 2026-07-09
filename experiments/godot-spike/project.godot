@@ -1,0 +1,36 @@
+; Engine Configuration File
+; Godot version: 4.4.1.stable
+; 2D 8-bit NES-style word-summoning TCG built from LitTCG data.
+
+[application]
+config/name="LitTCG"
+config/description="2D 8-bit word-summoning TCG for desktop, web, and XR."
+run/main_scene="res://scenes/main_menu.tscn"
+config/features=PackedStringArray("4.4", "Mobile")
+config/icon="res://icon.svg"
+
+[display]
+window/size/viewport_width=256
+window/size/viewport_height=224
+window/size/window_width_override=1024
+window/size/window_height_override=896
+window/stretch/mode="viewport"
+window/stretch/scale_mode="integer"
+window/vsync/vsync_mode=0
+window/handheld/orientation=4
+
+[rendering]
+textures/canvas_textures/default_texture_filter=0
+environment/defaults/default_clear_color=Color(0.117647, 0.117647, 0.286275, 1)
+renderer/rendering_method="mobile"
+
+[audio]
+ driver/enable_input=false
+
+[autoload]
+Database="*res://scripts/database.gd"
+GameState="*res://scripts/game_state.gd"
+
+[input]
+ui_accept={"deadzone": 0.5, "events": [Object(InputEventKey, "resource_local_to_scene": false, "echo": false, "pressed": false, "keycode": 4194309, "physical_keycode": 0, "unicode": 0, "location": 0, "mods": 0, "tooltip": "")]}
+click={"deadzone": 0.5, "events": [Object(InputEventMouseButton, "resource_local_to_scene": false, "button_index": 1, "pressed": true, "double_click": false, "mouse_button_toggle_on_doubleclick": false, "tooltip": "")]}

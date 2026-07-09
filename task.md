@@ -1,12 +1,12 @@
 # LitTCG — Autonomous Task Tracker
 
-> Single source of truth for Windsurf (orchestrator) + Claude Code (executor).
-> Synced with MASTER_TASK_LIST.md (285 tasks across 10 phases).
+> **This tracker is now superseded by `TODO_FULL_PLAN.md`**, a current, comprehensive plan built from a code-and-doc audit. The old content below is archived for reference.
+> Active work is tracked in `TODO_FULL_PLAN.md`.
 
 ## Workflow
-1. Windsurf plans and writes detailed task specs below
-2. Claude Code local executes via `./scripts/agent-loop.sh`
-3. Both read/write this file — tasks checked off as completed
+1. Read `TODO_FULL_PLAN.md` for the active phase and next unchecked task.
+2. Execute one task per turn; run `cargo test` and `cargo clippy` after each change.
+3. Update checkmarks in `TODO_FULL_PLAN.md` as tasks complete.
 4. Morning review: `git log --oneline -10` + `cargo test`
 
 ---

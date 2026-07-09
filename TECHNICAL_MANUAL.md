@@ -90,7 +90,7 @@ project-forge/
 | **Command API** | Direct ECS system calls | `handle_command()` JSON API (350 commands) |
 | **AI Integration** | AGENTS.md + diapers mode | 6 AI tools, shared hooks, skills, taskboard |
 | **Physics** | None | Rapier 3D + 2D |
-| **Audio** | Kokoro TTS sidecar | Spatial 3D, bus mixer, adaptive music |
+| **Audio** | Kokoro TTS sidecar + state-driven procedural music (`music.rs`) | Spatial 3D, bus mixer, adaptive music |
 | **Particles** | CPU-side burst + aura | GPU compute shaders, 9 presets |
 | **Materials** | Basic StandardMaterial | 56 PBR presets, WGSL shader editor |
 | **Post-Processing** | Bloom, SSAO (desktop only) | Bloom, SSAO, DoF, motion blur, color grading |
@@ -208,6 +208,7 @@ Local-first JSON, no cloud, no accounts, human-readable files. Pattern any educa
 | Google OAuth → Gemini pattern | Optional AI tutor where student's Google quota pays API costs | P1 |
 | Voice control system | Optional voice spelling / accessibility | P2 |
 | i18n framework (EN/FR) | Localization pattern for dashboard or companion app | P2 |
+| Procedural music & spatial audio feedback | State-driven WAV stems (`music.rs`) + future XR spatial drone placement | P1 |
 | PWA / Cloudflare deploy | Template for LitTCG dashboard or landing page | P2 |
 | BSL 1.1 license | IP protection model for LitTCG | P1 |
 
@@ -228,6 +229,15 @@ Local-first JSON, no cloud, no accounts, human-readable files. Pattern any educa
 | SpawnForge | Do not use as engine | Would throw away working code and reset the 90-day clock |
 | Trinity | Do not require Trinity backend | Would kill local-first/COPPA positioning |
 | Voix Vive iOS | Do not port the full React app | Use only specific components if needed |
+
+### 5.4 What We Are Adopting Now — Somatic Companion & Audio
+
+The Tao of Fun slice added two pieces from the VoixVive / somatic UX playbook:
+
+- **`src/core/companion.rs`**: a persistent 3D companion that follows the camera. This is the emotional anchor — the child chooses one pet from their collection and it stays with them through the world. In XR, the companion becomes a spatial companion drone.
+- **`src/core/music.rs` + `scripts/generate_music.py`**: procedural, loop-safe WAV music that crossfades by `GameState`. The soundtrack is state-aware rather than a passive loop: menu → world → battle. Future passes will tie drone pitch to companion word data and place sounds spatially using `SpatialListener`.
+
+Both are built with `bevy_audio` / `rodio` to avoid extra audio backends, and are feature-gated so the 2D combat slice still runs cleanly.
 
 ## 6. WASM Build Pipeline
 

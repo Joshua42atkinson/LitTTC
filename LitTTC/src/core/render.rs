@@ -665,16 +665,21 @@ impl Plugin for RenderPlugin {
 
 #[cfg(feature = "flat2d")]
 fn setup_2d_camera_and_background(mut commands: Commands) {
-    commands.spawn(Camera2d);
-    
-    // Spawn simple 2D dark background
+    // Camera2d automatically sets the correct 2D orthographic projection and Core2d render graph.
+    // IsDefaultUiCamera makes the main menu / HUD render to this camera.
+    commands.spawn((
+        Camera2d,
+        IsDefaultUiCamera,
+    ));
+
+    // Spawn simple 2D dark background behind everything at z=-1.
     commands.spawn((
         Sprite {
-            color: Color::srgba(0.04, 0.04, 0.08, 1.0),
+            color: Color::srgba(0.02, 0.02, 0.08, 1.0),
             custom_size: Some(Vec2::new(3000.0, 3000.0)),
             ..default()
         },
-        Transform::from_xyz(0.0, 0.0, -10.0),
+        Transform::from_xyz(0.0, 0.0, -1.0),
     ));
 }
 
@@ -688,49 +693,49 @@ fn spawn_2d_pet_avatars(
         
         let color = element.color();
         
-        // Spawn a flat circular/square sprite for the pet
+        // Spawn a flat circular/square sprite for the pet, scaled for the 256x224 viewport.
         commands.entity(entity).insert((
             Sprite {
                 color,
-                custom_size: Some(Vec2::new(120.0, 120.0)),
+                custom_size: Some(Vec2::new(64.0, 64.0)),
                 ..default()
             },
-            Transform::from_xyz(0.0, 0.0, 0.0),
+            Transform::from_xyz(0.0, 0.0, 1.0),
         )).with_children(|parent| {
             // Spawn eyes
             parent.spawn((
                 Sprite {
                     color: Color::WHITE,
-                    custom_size: Some(Vec2::new(15.0, 15.0)),
+                    custom_size: Some(Vec2::new(3.0, 3.0)),
                     ..default()
                 },
-                Transform::from_xyz(-25.0, 10.0, 1.0),
+                Transform::from_xyz(-5.0, 2.0, 1.0),
             ));
             parent.spawn((
                 Sprite {
                     color: Color::WHITE,
-                    custom_size: Some(Vec2::new(15.0, 15.0)),
+                    custom_size: Some(Vec2::new(3.0, 3.0)),
                     ..default()
                 },
-                Transform::from_xyz(25.0, 10.0, 1.0),
+                Transform::from_xyz(5.0, 2.0, 1.0),
             ));
-            
+
             // Spawn mouth
             parent.spawn((
                 Sprite {
                     color: Color::BLACK,
-                    custom_size: Some(Vec2::new(30.0, 6.0)),
+                    custom_size: Some(Vec2::new(6.0, 2.0)),
                     ..default()
                 },
-                Transform::from_xyz(0.0, -20.0, 1.0),
+                Transform::from_xyz(0.0, -4.0, 1.0),
             ));
-            
+
             // Label showing pet name
             parent.spawn((
                 Text2d::new(&avatar.word),
-                TextFont { font_size: 20.0, ..default() },
+                TextFont { font_size: 4.0, ..default() },
                 TextColor(Color::WHITE),
-                Transform::from_xyz(0.0, 80.0, 2.0),
+                Transform::from_xyz(0.0, 16.0, 2.0),
             ));
         });
     }

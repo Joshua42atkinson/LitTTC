@@ -1,6 +1,7 @@
 // pet_collection.rs — Pet collection gallery screen
 use bevy::prelude::*;
 use crate::components::{GameState, SpellBook, SpellBookEntry};
+use crate::generated_assets::GeneratedAssets;
 
 pub struct PetCollectionPlugin;
 
@@ -46,6 +47,7 @@ fn spawn_pet_collection_ui(
     mut commands: Commands,
     spellbook: Res<SpellBook>,
     state: Res<CollectionState>,
+    assets: Res<GeneratedAssets>,
 ) {
     let sorted = sorted_indices(&spellbook.entries, state.sort);
 
@@ -165,7 +167,7 @@ fn spawn_pet_collection_ui(
 
             // Detail panel
             let detail_text = if let Some(idx) = state.selected {
-                detail_text(&spellbook.entries[idx])
+                detail_text(&spellbook.entries[idx], &assets)
             } else {
                 "Select a pet to view details.".to_string()
             };
@@ -237,20 +239,34 @@ fn pet_label(entry: &SpellBookEntry) -> String {
     format!("{}\n{} | {}", entry.word, element, role)
 }
 
-fn detail_text(entry: &SpellBookEntry) -> String {
+fn detail_text(entry: &SpellBookEntry, assets: &GeneratedAssets) -> String {
     let element = entry.element.map(|e| format!("{:?}", e)).unwrap_or_else(|| "Unknown".to_string());
     let role = entry.role.map(|r| format!("{:?}", r)).unwrap_or_else(|| "Unknown".to_string());
     let companion_line = if entry.companion { "\n⭐ Companion" } else { "" };
+    let lore_line = assets.lore(&entry.word).map_or_else(String::new, |l| {
+        let mut s = String::new();
+        if !l.title.is_empty() {
+            s.push_str(&format!("\nTitle: {}", l.title));
+        }
+        if !l.habitat.is_empty() {
+            s.push_str(&format!("\nHome: {}", l.habitat));
+        }
+        if !l.fun_fact.is_empty() {
+            s.push_str(&format!("\nQuirk: {}", l.fun_fact));
+        }
+        s
+    });
+
     if let Some(stats) = entry.stats {
         format!(
-            "{}\nElement: {}\nRole: {}\nMastery: {:?}\nTimes: {}\nLogos: {:.1}\nPathos: {:.1}\nEthos: {:.1}\nSpeed: {:.1}{}",
+            "{}\nElement: {}\nRole: {}\nMastery: {:?}\nTimes: {}\nLogos: {:.1}\nPathos: {:.1}\nEthos: {:.1}\nSpeed: {:.1}{}{}",
             entry.word, element, role, entry.mastery, entry.times_encountered,
-            stats.logos, stats.pathos, stats.ethos, stats.speed, companion_line
+            stats.logos, stats.pathos, stats.ethos, stats.speed, companion_line, lore_line
         )
     } else {
         format!(
-            "{}\nElement: {}\nRole: {}\nMastery: {:?}\nTimes: {}{}",
-            entry.word, element, role, entry.mastery, entry.times_encountered, companion_line
+            "{}\nElement: {}\nRole: {}\nMastery: {:?}\nTimes: {}{}{}",
+            entry.word, element, role, entry.mastery, entry.times_encountered, companion_line, lore_line
         )
     }
 }

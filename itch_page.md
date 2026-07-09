@@ -15,6 +15,8 @@ Spell **"inferno"** and get a fiery, angry Rare pet. Spell **"serenity"** and ge
 - ⚔️ **Wand Duel Combat** — Use your SemanticSlime in 1v1 battles. Play synonyms for heavy attacks (2x damage). Play antonyms to counter/block enemy attacks. Master semantic relationships.
 - 🏛️ **Help NPCs with Grammar Quests** — Fill Mad-Lib slots with the right parts of speech. A verb goes in a verb slot. A noun goes in a noun slot. Grammar through play, not worksheets.
 - 🎴 **Collect, Evolve, Master** — Mastered pets gain golden auras, stronger stats, and a dream layer that whispers etymology poetry.
+- 🐾 **Choose a Companion** — One pet follows you through the world, reacting to the words you meet.
+- 🎵 **Procedural Music** — The soundtrack shifts as you explore, battle, and grow. Every word has a sound waiting to be heard.
 
 ## Why Parents Love It
 

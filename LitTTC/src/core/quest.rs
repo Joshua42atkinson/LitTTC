@@ -13,6 +13,14 @@ pub struct QuestSession {
     pub xp_reward: u32,
 }
 
+fn archetype_key(npc: &NpcData) -> String {
+    npc.archetype
+        .trim()
+        .strip_prefix("The ")
+        .unwrap_or(&npc.archetype)
+        .to_string()
+}
+
 pub fn start_quest(
     npc_name: &str,
     db: &GameDatabase,
@@ -21,45 +29,54 @@ pub fn start_quest(
     next_state: &mut NextState<GameState>,
     state: &State<GameState>,
 ) {
-    if let Some(quests) = db.quests.npc_chains.get(npc_name) {
-        let target_diff = grade_manager.active_grade;
-        let quest = match quests.iter()
-            .find(|q| q.difficulty == target_diff)
-            .or_else(|| quests.iter().find(|q| q.difficulty <= target_diff))
-            .or(quests.first()) {
-                Some(q) => q,
-                None => {
-                    warn!("No quests found for NPC: {}", npc_name);
-                    return;
-                }
-            };
-        
-        // Parse slots out of template (e.g. "{ADJECTIVE}")
-        let mut slots = Vec::new();
-        let mut temp_str = quest.template.clone();
-        
-        while let Some(start) = temp_str.find('{') {
-            if let Some(end) = temp_str.find('}') {
-                let slot_type = &temp_str[start+1..end];
-                slots.push(slot_type.to_string());
-                temp_str = temp_str[end+1..].to_string();
-            } else {
-                break;
+    let archetype = db.npcs.get(npc_name).map(archetype_key).unwrap_or_default();
+
+    let quests = db.quests.npc_chains.get(npc_name)
+        .filter(|chain| !chain.is_empty())
+        .or_else(|| db.quests.archetype_quests.get(&archetype));
+
+    let Some(quests) = quests else {
+        warn!("No quests found for NPC: {} (archetype: {})", npc_name, archetype);
+        return;
+    };
+
+    let target_diff = grade_manager.active_grade;
+    let quest = match quests.iter()
+        .find(|q| q.difficulty == target_diff)
+        .or_else(|| quests.iter().find(|q| q.difficulty <= target_diff))
+        .or(quests.first()) {
+            Some(q) => q,
+            None => {
+                warn!("No quests found for NPC: {}", npc_name);
+                return;
             }
+        };
+
+    // Parse slots out of template (e.g. "{ADJECTIVE}")
+    let mut slots = Vec::new();
+    let mut temp_str = quest.template.clone();
+
+    while let Some(start) = temp_str.find('{') {
+        if let Some(end) = temp_str.find('}') {
+            let slot_type = &temp_str[start+1..end];
+            slots.push(slot_type.to_string());
+            temp_str = temp_str[end+1..].to_string();
+        } else {
+            break;
         }
-
-        commands.insert_resource(QuestSession {
-            title: quest.title.clone(),
-            template: quest.template.clone(),
-            slots,
-            filled_slots: HashMap::new(),
-            xp_reward: quest.rewards.xp,
-        });
-
-        info!("Quest begun: {} with {}", quest.title, npc_name);
-        crate::commands::log_state_transition(state.get(), GameState::Questing);
-        next_state.set(GameState::Questing);
     }
+
+    commands.insert_resource(QuestSession {
+        title: quest.title.clone(),
+        template: quest.template.clone(),
+        slots,
+        filled_slots: HashMap::new(),
+        xp_reward: quest.rewards.xp,
+    });
+
+    info!("Quest begun: {} with {}", quest.title, npc_name);
+    crate::commands::log_state_transition(state.get(), GameState::Questing);
+    next_state.set(GameState::Questing);
 }
 
 pub fn fill_slot(
@@ -128,8 +145,9 @@ pub fn complete_quest(
     }
 
     commands.remove_resource::<QuestSession>();
-    crate::commands::log_state_transition(state.get(), GameState::Playing);
-    next_state.set(GameState::Playing);
+    let next = if cfg!(feature = "flat2d") { GameState::Exploring } else { GameState::Playing };
+    crate::commands::log_state_transition(state.get(), next.clone());
+    next_state.set(next);
 }
 
 pub fn get_npc_dialogue(npc_name: &str, db: &GameDatabase, time_of_day: &str) -> String {
@@ -355,13 +373,38 @@ fn cleanup_quest_ui_xr(
 fn spawn_quest_ui_2d(
     mut commands: Commands,
     session: Option<Res<QuestSession>>,
-    asset_server: Res<AssetServer>,
+    #[cfg(not(feature = "flat2d"))] asset_server: Res<AssetServer>,
 ) {
     let session = match session {
         Some(s) => s,
         None => return,
     };
 
+    #[cfg(feature = "flat2d")]
+    commands.spawn((
+        QuestUiPanel,
+        Node {
+            position_type: PositionType::Absolute,
+            top: Val::Px(50.0),
+            left: Val::Percent(50.0),
+            margin: UiRect::left(Val::Px(-300.0)),
+            padding: UiRect::all(Val::Px(60.0)),
+            flex_direction: FlexDirection::Column,
+            align_items: AlignItems::Center,
+            ..default()
+        },
+        BackgroundColor(Color::srgb(0.1, 0.1, 0.2)),
+        BorderColor::all(Color::srgb(0.4, 0.4, 0.9)),
+    )).with_children(|parent| {
+        parent.spawn((
+            QuestUiText,
+            Text::new(format!("Quest: {}\n\n{}\n\n[Click cards & click Play Card button to place, click Play Card to Submit when full]", session.title, get_display_sentence(&session))),
+            TextFont { font_size: 24.0, ..default() },
+            TextColor(Color::WHITE),
+        ));
+    });
+
+    #[cfg(not(feature = "flat2d"))]
     commands.spawn((
         QuestUiPanel,
         Node {

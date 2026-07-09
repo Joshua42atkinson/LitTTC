@@ -16,10 +16,10 @@
 | **Engine** | Bevy 0.18.1 ECS (Rust) |
 | **Target** | Web (WASM) MVP → Desktop → Android XR |
 | **Audience** | Homeschool market, ages 7-12 |
-| **Status** | MVP Refactor — Word Slimes Pivot |
-| **Date** | January 2025 |
-| **Codebase** | 24 source files, 33 integration tests passing, 0 warnings, 9,582 words in database |
-| **Recent Milestone** | Word Slimes MVP refactor complete: SemanticSlime-only companion, Wand Duel combat, Tutor Loop failure routing, curriculum-biased letter spawning |
+| **Status** | MVP Refactor + Tao of Fun Slice — companion, lore UI, and adaptive music in |
+| **Date** | July 2026 |
+| **Codebase** | 38 source files, 33 integration tests passing, `cargo clippy` clean on desktop/flat2d, `cargo check` clean on desktop/flat2d/xr, 9,582 words in database |
+| **Recent Milestone** | Persistent companion follows camera; `PetLore` shown in HUD and collection; state-driven procedural music with crossfade and `music_volume` |
 
 ---
 
@@ -44,6 +44,209 @@
 
 ---
 
+## STRATEGIC PIVOT: The 4-Pillar Combat System (July 2026)
+
+**Status:** We are pivoting from a pet collection focus to a **syntax-driven combat system** where language itself is the weapon. The core game loop must be validated in 2D before XR integration.
+
+### The New Core Vision
+
+LitTCG is a game where **language structure is the weapon**. Players don't just collect pets — they forge spells from grammar, battle with synonyms/antonyms, and evolve their vocabulary through semantic mastery.
+
+**The Semantic Slime as Avatar/Inventory:**
+- The Slime is the player's physical deck and weapon
+- It oozes out to form letters, morphs into holographic cards, and consumes words
+- In XR, it floats beside the player like a drone companion
+- It IS the Grimoire — all collected words live inside it
+
+**The Trainer Philosophy:**
+- We are not "teachers" or "doctors" — we are **Trainers**
+- We tame wild words, correct corrupted typos, and train vocabulary to mean more
+- Learning happens through mastery, not instruction
+
+### The 4 Pillars of Combat
+
+**Pillar 1: Thesaurus Dance Battle (synonym_database.json)**
+- **Synonyms** = Heavy Attacks / Overpower (semantic distance < 2.0)
+- **Antonyms** = Parries / Counters / Shields (semantic distance > 4.0)
+- Uses existing `WordStats` (Concreteness, Valence, Dominance, Intensity) for damage math
+- Implemented in `battle.rs` with `semantic_distance()` function
+
+**Pillar 2: Emotional Semantics (faces-protocol crate)**
+- Players attach emotions to the Slime when playing words
+- FACES protocol alters `WordStats` dynamically:
+  - "FIRE" + [Fierce Face] = High damage/intensity
+  - "FIRE" + [Joyful Face] = Healing campfire (High valence)
+- Teaches connotation and emotional intelligence
+
+**Pillar 3: Syntax Spell Crafting (Grammar at altar.rs)**
+- Spells are forged using grammatical structure:
+  - **Nouns** = Summons/Targets (Wolf, Wall, Sword)
+  - **Adjectives** = Auras/Elements (Searing, Impenetrable, Swift)
+  - **Verbs** = Actions (Strikes, Defends, Heals)
+- "Searing Sword Strikes" = immediate fire damage
+- "Impenetrable Wolf Defends" = fiery meat-shield
+- Bevy ECS reads part-of-speech tags and combines stats for multiplier combos
+
+**Pillar 4: Literary Devices as Metamagic**
+- **Oxymoron** (Armor Piercing): Combining antonyms ("Deafening Silence") bypasses shields
+- **Alliteration** (Combo System): 3 cards with same letter trigger "Echo Cast" (spell duplication)
+- **Hyperbole** (Overcharge): Triples damage but exhausts player (recoil damage)
+- **Foreshadowing** (Trap Cards): Face-down cards that activate on enemy conditions
+- **Palindromes** (Reflection): Words spelled same backward/forward (RADAR, KAYAK) reflect attacks
+- **Etymology Factions**: Latin/Greek roots = arcane buffs, Germanic/Norse = physical/brutal buffs
+
+### The 12 Jungian NPCs as Mentors
+
+Each NPC embodies a Jungian Archetype and teaches through their genre:
+- **The Grammarian** (The Enforcer Boss): Requires proper Subject-Verb-Object sentences or recoil damage
+- **The Poet** (The Bard): Fights using meter — must match syllable counts (5-7-5 Haiku combos stun)
+- **The Editor** (The Final Boss): "Red Pen" mechanic — can delete cards from player's hand mid-battle
+
+### RPG Progression: Vocabulary as Skill Tree
+
+- Leveling = unlocking stronger synonyms
+- "Hit" (5 dmg) → "Strike" (10 dmg) → "Pummel" (15 dmg + Stun) → "Obliterate" (50 dmg)
+- Mastery = visual evolution (decorations, golden aura, Dream Layer poetry)
+
+---
+
+## The 2D Gray-Box Vertical Slice — "Pokémon Red for Words"
+
+### Why 2D First
+
+The 2D build is not a downgrade of the XR vision. It is a **cheap, fast prototype of the same loop**. If walking around a 2D world, scanning objects, spelling words, and battling typos is not fun, then pass-through AR and ASL will not save it. The 2D slice answers one question: *is the core gameplay loop fun?*
+
+Once the loop is fun in 2D, we port it to XR by replacing keyboard/mouse with hand tracking and colored squares with holograms. The game logic stays identical.
+
+### The 2D World
+
+A single top-down explorable map built from colored rectangles and simple sprites. No 3D rendering, no tilemap crate, no external dependencies.
+
+**What's in the world:**
+- **Player Avatar** — a small controllable sprite (WASD / click-to-move).
+- **Semantic Slime Companion** — follows the avatar at a short distance; shows the active FACES emotion; IS the player's deck/grimoire.
+- **NPC Mentors** — the 12 Jungian archetypes standing in themed zones. Walk up and press `E` to talk. They give quests, teach etymology, and route the player into the Tutor Loop on defeat.
+- **Scannable Objects** — rocks, trees, doors, signs, rivers. Walk up and press `E` to "scan" them. This is the 2D equivalent of the XR pinch-to-capture flow. Scanning yields a word card.
+- **Wild Typos** — corrupted word creatures roaming the map. Touch one → transition to the Thesaurus Dance battle.
+- **Districts** — 2-3 themed zones (Garden, Shadow Library, Irony Junction) to test the FACES/setting system.
+
+**2D ↔ XR Mapping:**
+
+| XR Action | 2D Equivalent |
+|---|---|
+| Look at real-world object | Walk avatar near object |
+| Pinch to capture | Press `E` |
+| ASL fingerspell word | Type the word or tap letters |
+| Play a card | Click hand card |
+| Change Slime face | Click face button |
+
+### The Core 2D Loop
+
+```
+Explore world
+    → Scan object → harvest word card
+    → Talk to NPC → get quest
+    → Touch wild typo → enter battle
+
+Spell word (Constructing)
+    → Word becomes a pet card
+    → Pet card is added to the Semantic Slime
+
+Use pet cards
+    → In battle: Thesaurus Dance
+    → In quest: fill grammar slots
+    → In bonding: feed, pet, attune
+
+Progress
+    → XP, mastery, evolution, new districts
+    → Defeat → Tutor Loop with matching NPC
+```
+
+### The Thesaurus Dance Battle (2D Combat)
+
+Combat is a 1v1 vocabulary duel. The enemy is a Wild Typo with a word. The player builds a 1-3 card **sentence** (a "plot") and casts it.
+
+**Sentence structure:**
+
+```
+[Adjective] + [Noun] + [Verb]
+```
+
+Example:
+> **Searing Sword Strikes**
+
+Each card contributes:
+- **Adjective** — element/damage-type multiplier
+- **Noun** — summon/target base effect
+- **Verb** — action type (attack, defend, heal, burn, freeze)
+
+**FACES Emotional Stance:**
+
+Before casting, the player selects the Slime's emotional face. The face modifies the sentence's effect:
+
+| Face | Effect |
+|---|---|
+| **Fierce** | +20% damage; fire verbs become blasts |
+| **Joyful** | Heals player slightly; heals become group heals |
+| **Calm** | No recoil from hyperbole; +block |
+| **Angry** | +30% damage but take recoil |
+
+FACES is a real choice independent of cards. The same three cards produce different results depending on the chosen emotion.
+
+### Literary Devices as Plot Mechanics
+
+The sentence the player builds can trigger literary-device "metamagic." These are the combo system of the card game.
+
+| Device | Trigger | Combat Effect |
+|---|---|---|
+| **Alliteration** | 2+ cards start with same letter | Echo Cast — repeat the last card's effect |
+| **Oxymoron** | Adjective and noun are antonyms | Armor Piercing — ignore enemy resistance |
+| **Hyperbole** | Any card has high intensity | Overcharge — 3× damage, self-damage recoil |
+| **Palindrome** | Any card is a palindrome | Reflect — return part of next enemy attack |
+| **Personification** | Noun + animate verb | Summon a temporary companion/tank |
+| **Onomatopoeia** | Verb is a sound word | Stun — enemy skips next turn |
+| **Metaphor** | Two nouns in the sentence | Transform damage into the second noun's element |
+
+The player is not just picking a card — they are building a sentence with synergies.
+
+### Enemy Design
+
+Each Wild Typo has:
+- A **word** (e.g., "fire")
+- A **part of speech weakness** (e.g., "weak to antonyms / verbs")
+- An **element** (from etymology root)
+- A **role** (from suffix)
+
+The player reads the weakness, picks cards that counter it, and chooses a FACES emotion that amplifies the counter.
+
+### Quests in 2D
+
+NPCs give **AR Bounties** reinterpreted for 2D:
+
+> *"My Slime is hot. Find something cold in this district."*
+> 
+> The child walks to the ice cave sprite, scans it ("ice"), spells I-C-E, and returns with the word.
+
+Mad-Lib quests remain:
+
+> *"The {ADJECTIVE} {NOUN} {VERB} loudly."*
+> 
+> The child plays cards that match the grammar slots.
+
+### Success Criteria for the 2D Slice
+
+- Player can explore a small map.
+- Player can scan objects and spell words to get cards.
+- Player can talk to NPCs and receive quests.
+- Player can battle Wild Typos using sentence crafting + FACES + literary devices.
+- The combat log explains why damage happened.
+- Losing routes the player to a Tutor Loop NPC.
+- The 1-minute loop is fun enough to replay.
+
+Once this slice is fun, we port the exact same systems to XR: the avatar becomes the player, the scan button becomes a pinch, and the 2D sprites become holograms.
+
+---
+
 ## 1. Core Vision
 
 LitTCG is a pet collection game where **words are pets**.
@@ -60,6 +263,15 @@ A child spells a word. The word validates against a database of 9,582 English wo
 - **Active Imagination** — Words are not text on a page. They are living creatures with personalities. The child's imagination is the primary interface.
 - **Stealth Assessment** — The game tracks what words the child uses, how they use them, and what patterns emerge. No tests. No quizzes. The play IS the assessment.
 - **Local-First** — No cloud. No tracking. No accounts. Save files live on the family's device. COPPA compliant by design.
+
+### The Tao of Fun
+
+Our working design lens from `docs/TAO_OF_FUN_REVIEW.md`:
+
+1. **Presence before points.** A world exists — a floating companion, a talking NPC, a changing sky, a shifting soundtrack — before any score is shown.
+2. **Personality before procedure.** Every NPC, pet, and typo has a voice, a face, and a preference. The game does not explain; the world reacts.
+3. **Permission before punishment.** Mistakes are discoveries. A misspelled word becomes a mutant, a lost battle becomes a tutor visit, a wrong root becomes a hint.
+4. **Play before pedagogy.** The challenge can be quantitative and Common-Core aligned, but the exercise must feel like play — Montessori self-direction plus Steiner head/heart/hands balance.
 
 ---
 
@@ -225,11 +437,24 @@ Child selects 3-6 pets from collection to form a battle roster. Strategic choice
 
 ### 4.7 Companion Follow System
 
-**Status: Not yet implemented. Existed in Roblox version.**
+**Status: Implemented in `src/core/companion.rs`.**
 
-One pet follows the child through the world — floating beside them as they explore, collect letters, and talk to NPCs. Provides emotional connection and identity.
+The child chooses one pet from the collection and marks it as their companion (`SpellBookEntry::companion: true`). In 3D / XR modes the companion spawns as a persistent `PetAvatar` entity and smoothly follows the camera, giving the world an emotional anchor. In `flat2d` mode the system is disabled to keep the 2D gray-box clean. Future passes will add companion reactions to pickups, NPCs, and battle outcomes.
 
-### 4.8 Pet Dream Layer
+### 4.8 Music & Somatic Soundtrack
+
+**Status: Implemented in `src/core/music.rs`.**
+
+The soundtrack is not a passive loop. It is a state-aware procedural layer:
+
+- `scripts/generate_music.py` writes loop-safe WAV stems from integer harmonic stacks.
+- Three stems exist: `music_menu.wav` (calm), `music_world.wav` (explore), `music_battle.wav` (tense).
+- `MusicPlugin` crossfades between them as `GameState` changes and respects `GameSettings.music_volume`.
+- Future passes will tie drone pitch to the companion word, add spatial audio around the companion/altar, and add reveal flourishes per element.
+
+This is the first step toward a VoixVive-style audio-first pedagogy: every sound teaches the ear.
+
+### 4.9 Pet Dream Layer
 
 **Status: Not yet implemented. Designed in Roblox version.**
 
@@ -760,7 +985,7 @@ The FACES protocol is original research, documented in `crates/faces-protocol/do
 
 ## 19. Engine Status — What Exists vs What Needs Building
 
-### 19.1 What's Built and Working (22 source files, 8/8 tests)
+### 19.1 What's Built and Working (38 source files, 33/33 integration tests)
 
 | System | Status | Source File |
 |--------|--------|------------|
@@ -816,7 +1041,7 @@ The FACES protocol is original research, documented in `crates/faces-protocol/do
 | **P1** | RPS class modifier | +50%/-25% damage based on class matchup |
 | **P1** | Active combat learning | Synonym/antonym challenges during battle |
 | **P1** | Color-coded quest slots | Visual grammar validation |
-| **P2** | Companion follow system | Pet follows player through world |
+| **P2** | ~~Companion follow system~~ | ✅ Done in `companion.rs` |
 | **P2** | Nuisance letters | Roaming letters that chase player |
 | **P2** | Curriculum-biased spawning | Letters biased toward grade-appropriate words |
 | **P2** | Pet Dream Layer | Mastered pets whisper etymology poetry |

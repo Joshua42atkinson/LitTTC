@@ -112,7 +112,7 @@ impl TransitionVector {
     /// - 4-10: Moderate shift (topic change, new information)
     /// - 11+: Major shift (emotional volatility, crisis, breakthrough)
     pub fn magnitude(&self) -> u16 {
-        self.delta_aura.unsigned_abs() as u16
+        self.delta_aura.unsigned_abs()
             + self.delta_container.unsigned_abs() as u16
             + self.delta_focus.unsigned_abs() as u16
             + self.delta_action.unsigned_abs() as u16

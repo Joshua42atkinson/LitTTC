@@ -1,0 +1,33 @@
+{
+  "character_sheet": {
+    "mind_attunement": 0.5,
+    "heart_attunement": 0.3,
+    "body_attunement": 0.1,
+    "action_attunement": 0.05,
+    "emergent_class": "The Oracle",
+    "words_encountered": 7,
+    "total_deeper_swipes": 2,
+    "total_xp": 120,
+    "active_summon_class": "SemanticSlime",
+    "arm_length": 0.65
+  },
+  "spellbook": {
+    "entries": [
+      {
+        "word": "clarity",
+        "channel": "Mind",
+        "mastery": "Experienced",
+        "times_encountered": 3,
+        "element": "Water",
+        "role": "Bruiser",
+        "stats": null,
+        "companion": false
+      }
+    ]
+  },
+  "word_trail": {
+    "visited_words": ["clarity", "courage"],
+    "swipe_history": ["Yes", "No"],
+    "current_word": "clarity"
+  }
+}

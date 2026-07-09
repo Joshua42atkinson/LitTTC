@@ -65,6 +65,8 @@ pub struct WordStats {
     pub dominance: f32,
     #[serde(rename = "GradeLevel")]
     pub grade_level: String,
+    #[serde(rename = "POS", default)]
+    pub part_of_speech: String,
 }
 
 #[derive(Deserialize, Clone, Debug)]
@@ -101,9 +103,10 @@ pub struct EtymologyDB {
 }
 
 
-#[derive(Deserialize, Clone, Debug)]
+#[derive(Deserialize, Clone, Debug, Default)]
 pub struct Rewards {
     #[serde(rename = "XP")]
+    #[serde(default)]
     pub xp: u32,
 }
 
@@ -114,8 +117,10 @@ pub struct NpcQuest {
     #[serde(rename = "Template")]
     pub template: String,
     #[serde(rename = "Difficulty")]
+    #[serde(default)]
     pub difficulty: u32,
     #[serde(rename = "Rewards")]
+    #[serde(default)]
     pub rewards: Rewards,
 }
 
@@ -124,10 +129,12 @@ pub struct NpcQuest {
 pub struct QuestData {
     #[serde(rename = "NPCChains")]
     pub npc_chains: HashMap<String, Vec<NpcQuest>>,
+    #[serde(rename = "ArchetypeQuests")]
+    pub archetype_quests: HashMap<String, Vec<NpcQuest>>,
 }
 
 
-#[derive(Deserialize, Clone, Debug)]
+#[derive(Deserialize, Clone, Debug, Default)]
 pub struct NpcDialogue {
     #[serde(rename = "Dawn")]
     pub dawn: Vec<String>,
@@ -139,12 +146,15 @@ pub struct NpcDialogue {
     pub night: Vec<String>,
 }
 
-#[derive(Deserialize, Clone, Debug)]
+#[derive(Deserialize, Clone, Debug, Default)]
 pub struct NpcData {
     #[serde(rename = "AvatarPath")]
     pub avatar_path: Option<String>,
     #[serde(rename = "Dialogue")]
     pub dialogue: NpcDialogue,
+    #[serde(rename = "Archetype")]
+    #[serde(default)]
+    pub archetype: String,
 }
 
 #[derive(Resource, Debug, Clone)]
@@ -245,7 +255,20 @@ mod tests {
         assert!(!db.synonyms.is_empty());
         assert!(!db.etymology.roots.is_empty());
         assert!(!db.quests.npc_chains.is_empty());
+        assert!(!db.quests.archetype_quests.is_empty(), "Archetype quest pools should load");
         assert!(!db.npcs.is_empty());
+
+        // Every NPC should have an archetype and at least one quest chain
+        for (name, npc) in &db.npcs {
+            assert!(!npc.archetype.is_empty(), "NPC {} should have an archetype", name);
+            let archetype = npc.archetype.trim().strip_prefix("The ").unwrap_or(&npc.archetype);
+            assert!(
+                db.quests.npc_chains.contains_key(name) || db.quests.archetype_quests.contains_key(archetype),
+                "NPC {} (archetype {}) should have a quest chain",
+                name,
+                archetype
+            );
+        }
     }
 }
 

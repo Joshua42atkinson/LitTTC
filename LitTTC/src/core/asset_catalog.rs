@@ -18,6 +18,11 @@ pub const SOUND_ATTUNE: &str = "sounds/attune.ogg";
 #[cfg(any(not(feature = "tts"), target_arch = "wasm32"))]
 pub const SOUND_BLIP: &str = "sounds/blip.ogg";
 
+// Music stems
+pub const MUSIC_MENU: &str = "sounds/music_menu.wav";
+pub const MUSIC_WORLD: &str = "sounds/music_world.wav";
+pub const MUSIC_BATTLE: &str = "sounds/music_battle.wav";
+
 // TTS scratch file
 #[cfg(all(feature = "tts", not(target_arch = "wasm32")))]
 pub const TTS_OUTPUT_PATH: &str = "assets/sounds/tts_output.mp3";

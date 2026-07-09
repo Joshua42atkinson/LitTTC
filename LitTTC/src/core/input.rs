@@ -1,6 +1,8 @@
 // input.rs — Input: Touch Drag / Mouse Swipe / Keyboard Gesture Detection
 use bevy::prelude::*;
 use crate::components::*;
+#[cfg(not(feature = "xr"))]
+use rand;
 
 #[derive(Resource, Default)]
 pub struct DragState {
@@ -274,6 +276,33 @@ pub fn keyboard_battle_interaction(
         if idx < hand.cards.len() {
             writer.write(crate::commands::GameCommand::PlayBattleCard(idx));
         }
+    }
+}
+
+#[cfg(not(feature = "xr"))]
+pub fn keyboard_debug_shortcuts(
+    keys: Res<ButtonInput<KeyCode>>,
+    state: Res<State<GameState>>,
+    mut writer: MessageWriter<crate::commands::GameCommand>,
+) {
+    // Debug battle shortcuts (only in Playing state)
+    if *state.get() == GameState::Playing && keys.just_pressed(KeyCode::KeyB) {
+        // Start debug battle with a random word
+        let debug_words = ["happy", "sad", "angry", "joyful", "fierce", "calm", "thunder", "shadow"];
+        let random_word = debug_words[rand::random::<usize>() % debug_words.len()];
+        writer.write(crate::commands::GameCommand::DebugBattle(random_word.to_string()));
+    }
+
+    // Face switching (any state)
+    if keys.just_pressed(KeyCode::KeyF) {
+        let faces = ["fierce", "joyful", "calm", "angry"];
+        let random_face = faces[rand::random::<usize>() % faces.len()];
+        writer.write(crate::commands::GameCommand::SetFace(random_face.to_string()));
+    }
+
+    // VAAM print (any state)
+    if keys.just_pressed(KeyCode::KeyV) {
+        writer.write(crate::commands::GameCommand::PrintVaam);
     }
 }
 

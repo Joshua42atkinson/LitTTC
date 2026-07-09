@@ -31,8 +31,11 @@ pub mod core {
     pub mod diagnostics;
     pub mod blocklist;
     pub mod commands;
+    pub mod music;
+    pub mod companion;
     pub mod platform_paths;
     pub mod performance;
+    pub mod ar_capture;
 }
 
 pub mod bridge {
@@ -121,7 +124,9 @@ fn main() {
                 hud::HudPlugin, menu::MenuPlugin, tutorial::TutorialPlugin, paywall::PaywallPlugin,
                 time_cycle::TimeCyclePlugin, spatial_ui::SpatialUiPlugin, database::DatabasePlugin,
                 spatial_deck::SpatialDeckPlugin, altar::AltarPlugin, dialogue_ui::DialogueUiPlugin,
-                pet_reveal::PetRevealPlugin,
+                pet_reveal::PetRevealPlugin, ar_capture::ARCapturePlugin,
+                companion::CompanionPlugin,
+                music::MusicPlugin,
             ))
             .add_systems(Startup, generated_assets::load_generated_assets)
             .add_systems(OnEnter(GameState::Loading), (database::spawn_loading_ui, database::start_loading_database))
@@ -147,6 +152,8 @@ fn main() {
                 time_cycle::TimeCyclePlugin, spatial_ui::SpatialUiPlugin, database::DatabasePlugin,
                 spatial_deck::SpatialDeckPlugin, altar::AltarPlugin, dialogue_ui::DialogueUiPlugin,
                 pet_reveal::PetRevealPlugin,
+                companion::CompanionPlugin,
+                music::MusicPlugin,
             ))
             .add_systems(Startup, generated_assets::load_generated_assets)
             .add_systems(OnEnter(GameState::Loading), (database::spawn_loading_ui, database::start_loading_database))

@@ -1,11 +1,39 @@
 // hud.rs - HUD Overlay for Character Sheet, XP, Mastery, and Stash
 use bevy::prelude::*;
+#[cfg(feature = "flat2d")]
+use crate::commands::{GameCommand, log_state_transition};
 use crate::components::*;
+#[cfg(not(feature = "flat2d"))]
 use crate::generated_assets::GeneratedAssets;
 use crate::letter::{LetterStash, CurrentSpelling};
 
 #[derive(Component)]
 pub struct HudRoot;
+
+/// Marker for the left-side Explore/Talk action buttons.
+/// Hidden while in the 2D overworld so the player uses the world instead of menus.
+#[derive(Component)]
+pub struct ActionMenuPanel;
+
+#[cfg(feature = "flat2d")]
+#[derive(Component)]
+pub struct ConstructingRoot;
+
+#[cfg(feature = "flat2d")]
+#[derive(Component)]
+pub struct ConstructingStashText;
+
+#[cfg(feature = "flat2d")]
+#[derive(Component)]
+pub struct ConstructingSpellingText;
+
+#[cfg(feature = "flat2d")]
+#[derive(Component)]
+pub struct ConstructingSubmitButton;
+
+#[cfg(feature = "flat2d")]
+#[derive(Component)]
+pub struct ConstructingBackspaceButton;
 
 #[derive(Component)]
 pub struct StatsText;
@@ -56,21 +84,39 @@ pub struct HudPlugin;
 
 impl Plugin for HudPlugin {
     fn build(&self, app: &mut App) {
-        app.add_systems(Startup, setup_hud)
-           .add_systems(Update, (
-               update_stats_ui,
-               update_stash_ui,
-               update_spelling_ui,
-               update_hand_ui,
-               update_deck_counter_ui,
-               update_xp_progress_bar,
-               update_active_pet_ui,
-               update_badge_ui,
-           ));
+        #[cfg(feature = "flat2d")]
+        {
+            app.add_systems(Startup, setup_hud)
+               .add_systems(Update, (
+                   update_stats_ui,
+                   update_stash_ui,
+                   update_spelling_ui,
+                   update_hand_ui,
+                   update_deck_counter_ui,
+                   update_xp_progress_bar,
+                   update_active_pet_ui,
+                   update_badge_ui,
+                   toggle_action_menu_visibility,
+               ));
+        }
+        #[cfg(not(feature = "flat2d"))]
+        {
+            app.add_systems(Startup, setup_hud)
+               .add_systems(Update, (
+                   update_stats_ui,
+                   update_stash_ui,
+                   update_spelling_ui,
+                   update_hand_ui,
+                   update_deck_counter_ui,
+                   update_xp_progress_bar,
+                   update_active_pet_ui,
+                   update_badge_ui,
+               ));
+        }
     }
 }
 
-fn setup_hud(mut commands: Commands, asset_server: Res<AssetServer>) {
+fn setup_hud(mut commands: Commands, _asset_server: Res<AssetServer>) {
     // HUD Root Node (Absolute, full screen)
     commands.spawn((
         Node {
@@ -174,6 +220,7 @@ fn setup_hud(mut commands: Commands, asset_server: Res<AssetServer>) {
             ));
 
             // AI-generated pet portrait (fallback to Barnaby avatar until a pet spawns)
+            #[cfg(not(feature = "flat2d"))]
             stats_parent.spawn((
                 Node {
                     width: Val::Px(120.0),
@@ -183,7 +230,21 @@ fn setup_hud(mut commands: Commands, asset_server: Res<AssetServer>) {
                     ..default()
                 },
                 BorderColor::all(Color::srgb(0.8, 0.6, 0.2)),
-                ImageNode::new(asset_server.load(crate::asset_catalog::BARNABY_AVATAR)),
+                ImageNode::new(_asset_server.load(crate::asset_catalog::BARNABY_AVATAR)),
+                PetPortrait,
+            ));
+
+            #[cfg(feature = "flat2d")]
+            stats_parent.spawn((
+                Node {
+                    width: Val::Px(120.0),
+                    height: Val::Px(120.0),
+                    margin: UiRect::top(Val::Px(10.0)),
+                    border: UiRect::all(Val::Px(2.0)),
+                    ..default()
+                },
+                BorderColor::all(Color::srgb(0.8, 0.6, 0.2)),
+                BackgroundColor(Color::srgb(0.2, 0.2, 0.3)),
                 PetPortrait,
             ));
         });
@@ -221,6 +282,8 @@ fn setup_hud(mut commands: Commands, asset_server: Res<AssetServer>) {
             row_gap: Val::Px(15.0),
             ..default()
         },
+        HudRoot,
+        ActionMenuPanel,
     )).with_children(|parent| {
         // Battle Button
         parent.spawn((
@@ -279,6 +342,7 @@ fn setup_hud(mut commands: Commands, asset_server: Res<AssetServer>) {
             column_gap: Val::Px(20.0),
             ..default()
         },
+        HudRoot,
     )).with_children(|parent| {
         // Play Card Button
         parent.spawn((
@@ -333,6 +397,7 @@ fn setup_hud(mut commands: Commands, asset_server: Res<AssetServer>) {
             left: Val::Percent(45.0),
             ..default()
         },
+        HudRoot,
     )).with_children(|bottom_parent| {
         bottom_parent.spawn((
             Text::new(""),
@@ -353,6 +418,7 @@ fn setup_hud(mut commands: Commands, asset_server: Res<AssetServer>) {
             column_gap: Val::Px(15.0),
             ..default()
         },
+        HudRoot,
         HandUiRoot,
     ));
 }
@@ -425,7 +491,7 @@ fn update_hand_ui(
     hand: Res<crate::components::Hand>,
     root_query: Query<Entity, With<HandUiRoot>>,
     card_query: Query<Entity, With<HandCardUi>>,
-    asset_server: Res<AssetServer>,
+    _asset_server: Res<AssetServer>,
 ) {
     if hand.is_changed() {
         for entity in &card_query {
@@ -451,7 +517,10 @@ fn update_hand_ui(
                             ..default()
                         },
                         BorderColor::all(border_color),
-                        ImageNode::new(asset_server.load(crate::asset_catalog::CARD_BACKGROUND)),
+                        #[cfg(not(feature = "flat2d"))]
+                        ImageNode::new(_asset_server.load(crate::asset_catalog::CARD_BACKGROUND)),
+                        #[cfg(feature = "flat2d")]
+                        BackgroundColor(Color::srgb(0.15, 0.15, 0.25)),
                     )).with_children(|card| {
                         card.spawn((
                             Text::new(format!("[{}]\n\n{}", i + 1, word)),
@@ -504,6 +573,7 @@ fn update_xp_progress_bar(
     }
 }
 
+#[cfg(not(feature = "flat2d"))]
 fn update_active_pet_ui(
     pet_query: Query<(&PetAvatar, &Element), Changed<PetAvatar>>,
     mut hud_query: Query<&mut Text, With<ActivePetText>>,
@@ -519,13 +589,85 @@ fn update_active_pet_ui(
         return;
     };
 
+    let lore_line = assets.lore(&pet.word).map_or_else(String::new, |l| {
+        let mut extra = String::new();
+        if !l.title.is_empty() {
+            extra.push_str(&format!("\n{}", l.title));
+        }
+        if !l.fun_fact.is_empty() {
+            extra.push_str(&format!("\n{}", l.fun_fact));
+        }
+        extra
+    });
+
     for mut text in &mut hud_query {
-        text.0 = format!("Pet: {} ({:?})", pet.word.to_uppercase(), element);
+        text.0 = format!("Pet: {} ({:?}){}", pet.word.to_uppercase(), element, lore_line);
     }
 
     for mut portrait in &mut portrait_query {
         let path = assets.portrait_path_or_fallback(&pet.word, &format!("{:?}", element));
         portrait.image = asset_server.load(&path);
+    }
+}
+
+#[cfg(feature = "flat2d")]
+fn update_active_pet_ui(
+    pet_query: Query<(&PetAvatar, &Element), Changed<PetAvatar>>,
+    mut hud_query: Query<&mut Text, With<ActivePetText>>,
+    mut portrait_query: Query<&mut BackgroundColor, With<PetPortrait>>,
+) {
+    if pet_query.is_empty() {
+        return;
+    }
+
+    let Some((pet, element)) = pet_query.iter().next() else {
+        return;
+    };
+
+    let lore_line = assets_lore(&pet.word);
+
+    for mut text in &mut hud_query {
+        text.0 = format!("Pet: {} ({:?}){}", pet.word.to_uppercase(), element, lore_line);
+    }
+
+    for mut portrait in &mut portrait_query {
+        portrait.0 = element.color();
+    }
+}
+
+fn assets_lore(_word: &str) -> String {
+    // GeneratedAssets is loaded, but as a resource we can't easily get here without
+    // importing it. For flat2d we just return an empty string for now.
+    String::new()
+}
+
+#[cfg(feature = "flat2d")]
+pub fn toggle_hud_visibility(
+    state: Res<State<GameState>>,
+    mut query: Query<&mut Visibility, With<HudRoot>>,
+) {
+    let show = matches!(
+        state.get(),
+        GameState::Playing | GameState::Battling | GameState::Questing | GameState::Reviewing | GameState::Exploring
+    );
+    for mut vis in &mut query {
+        *vis = if show { Visibility::Visible } else { Visibility::Hidden };
+    }
+}
+
+#[cfg(feature = "flat2d")]
+pub fn toggle_action_menu_visibility(
+    state: Res<State<GameState>>,
+    mut query: Query<&mut Visibility, With<ActionMenuPanel>>,
+) {
+    // The old Explore/Talk buttons only make sense in the legacy Playing state or in menus.
+    // In the 2D overworld the player walks to objects/NPCs directly.
+    let show = matches!(
+        state.get(),
+        GameState::Playing | GameState::Battling | GameState::Questing | GameState::Reviewing
+    );
+    for mut vis in &mut query {
+        *vis = if show { Visibility::Visible } else { Visibility::Hidden };
     }
 }
 
@@ -641,6 +783,178 @@ pub fn cleanup_review_ui_2d(
 ) {
     for entity in query.iter() {
         commands.entity(entity).despawn();
+    }
+}
+
+#[cfg(feature = "flat2d")]
+pub fn fill_letter_stash_and_start_constructing(
+    mut stash: ResMut<crate::letter::LetterStash>,
+    mut next_state: ResMut<NextState<GameState>>,
+) {
+    use rand::Rng;
+    let mut rng = rand::thread_rng();
+    stash.letters.clear();
+    for _ in 0..10 {
+        stash.letters.push((rng.gen_range(0u8..26) + b'A') as char);
+    }
+    log_state_transition(&GameState::Collecting, GameState::Constructing);
+    next_state.set(GameState::Constructing);
+}
+
+#[cfg(feature = "flat2d")]
+pub fn spawn_constructing_ui(mut commands: Commands) {
+    commands.spawn((
+        ConstructingRoot,
+        Node {
+            position_type: PositionType::Absolute,
+            top: Val::Percent(15.0),
+            left: Val::Percent(15.0),
+            width: Val::Percent(70.0),
+            height: Val::Percent(70.0),
+            flex_direction: FlexDirection::Column,
+            justify_content: JustifyContent::Center,
+            align_items: AlignItems::Center,
+            row_gap: Val::Px(24.0),
+            padding: UiRect::all(Val::Px(24.0)),
+            ..default()
+        },
+        BackgroundColor(Color::srgba(0.05, 0.05, 0.12, 0.95)),
+    ))
+    .with_children(|parent| {
+        parent.spawn((
+            Text::new("Construct a Word"),
+            TextFont { font_size: 42.0, ..default() },
+            TextColor(Color::srgb(0.9, 0.8, 0.3)),
+        ));
+
+        parent.spawn((
+            ConstructingStashText,
+            Text::new("Stash: []"),
+            TextFont { font_size: 26.0, ..default() },
+            TextColor(Color::srgb(0.4, 0.8, 0.4)),
+        ));
+
+        parent.spawn((
+            ConstructingSpellingText,
+            Text::new("_"),
+            TextFont { font_size: 56.0, ..default() },
+            TextColor(Color::srgb(0.9, 0.9, 0.2)),
+        ));
+
+        parent.spawn((
+            Text::new("Type A-Z, Enter to submit, Backspace to undo"),
+            TextFont { font_size: 18.0, ..default() },
+            TextColor(Color::srgb(0.6, 0.6, 0.6)),
+        ));
+
+        parent.spawn((
+            Node {
+                flex_direction: FlexDirection::Row,
+                column_gap: Val::Px(20.0),
+                ..default()
+            },
+        )).with_children(|row| {
+            row.spawn((
+                Button,
+                ConstructingSubmitButton,
+                Node {
+                    width: Val::Px(160.0),
+                    height: Val::Px(60.0),
+                    justify_content: JustifyContent::Center,
+                    align_items: AlignItems::Center,
+                    ..default()
+                },
+                BorderColor::all(Color::srgb(0.8, 0.6, 0.2)),
+                BackgroundColor(Color::srgba(0.2, 0.5, 0.2, 0.9)),
+            )).with_children(|btn| {
+                btn.spawn((
+                    Text::new("Submit"),
+                    TextFont { font_size: 24.0, ..default() },
+                    TextColor(Color::WHITE),
+                ));
+            });
+
+            row.spawn((
+                Button,
+                ConstructingBackspaceButton,
+                Node {
+                    width: Val::Px(160.0),
+                    height: Val::Px(60.0),
+                    justify_content: JustifyContent::Center,
+                    align_items: AlignItems::Center,
+                    ..default()
+                },
+                BorderColor::all(Color::srgb(0.6, 0.2, 0.2)),
+                BackgroundColor(Color::srgba(0.4, 0.15, 0.15, 0.9)),
+            )).with_children(|btn| {
+                btn.spawn((
+                    Text::new("Backspace"),
+                    TextFont { font_size: 24.0, ..default() },
+                    TextColor(Color::WHITE),
+                ));
+            });
+        });
+    });
+}
+
+#[cfg(feature = "flat2d")]
+pub fn despawn_constructing_ui(
+    mut commands: Commands,
+    root_query: Query<Entity, With<ConstructingRoot>>,
+    children_query: Query<&Children>,
+) {
+    fn despawn_node(cmds: &mut Commands, entity: Entity, children_query: &Query<&Children>) {
+        if let Ok(kids) = children_query.get(entity) {
+            for child in kids.iter() {
+                despawn_node(cmds, child, children_query);
+            }
+        }
+        cmds.entity(entity).despawn();
+    }
+
+    for root in &root_query {
+        despawn_node(&mut commands, root, &children_query);
+    }
+}
+
+#[cfg(feature = "flat2d")]
+pub fn update_constructing_ui(
+    stash: Res<crate::letter::LetterStash>,
+    spelling: Res<crate::letter::CurrentSpelling>,
+    mut query: Query<(&mut Text, Option<&ConstructingStashText>, Option<&ConstructingSpellingText>)>,
+) {
+    let stash_str: String = stash.letters.iter().collect();
+    let display = if spelling.word.is_empty() {
+        "_".to_string()
+    } else {
+        spelling.word.clone()
+    };
+
+    for (mut text, stash_marker, spelling_marker) in &mut query {
+        if stash_marker.is_some() {
+            text.0 = format!("Stash: [{}]", stash_str);
+        }
+        if spelling_marker.is_some() {
+            text.0 = display.clone();
+        }
+    }
+}
+
+#[cfg(feature = "flat2d")]
+pub fn handle_constructing_buttons(
+    mut writer: MessageWriter<GameCommand>,
+    mut submit_query: Query<&Interaction, With<ConstructingSubmitButton>>,
+    mut backspace_query: Query<&Interaction, With<ConstructingBackspaceButton>>,
+) {
+    for interaction in &mut submit_query {
+        if *interaction == Interaction::Pressed {
+            writer.write(GameCommand::SubmitSpelling);
+        }
+    }
+    for interaction in &mut backspace_query {
+        if *interaction == Interaction::Pressed {
+            writer.write(GameCommand::Backspace);
+        }
     }
 }
 

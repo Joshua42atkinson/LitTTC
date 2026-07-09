@@ -24,7 +24,7 @@ impl Default for GameSettings {
     fn default() -> Self {
         Self {
             sound_volume: 1.0,
-            music_volume: 1.0,
+            music_volume: 0.05,
             tts_enabled: true,
             hints_enabled: true,
         }

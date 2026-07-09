@@ -317,3 +317,134 @@ Added unit and integration tests across the engine. Test count: 39 → 128 (48 u
 - [x] `trunk build` succeeds (WASM target compiles)
 - [ ] `trunk serve` tested in Chrome
 - [ ] No critical bugs in the happy path
+
+---
+
+## Diapers Mode: 2D flat2d Screen-by-Screen E2E Playthrough
+
+> Goal: Every screen reachable and functional in the flat2d build. Use the temporary `LITTCG_AUTOPLAY=1` harness to capture screenshots and verify transitions.
+
+### Setup
+- [x] Auto-play screenshot harness exists (`main.rs` `autoplay_system`) and captures `flat2d_autoplay_<State>.png`.
+- [x] `cargo test` passes.
+- [x] `cargo check --features flat2d` passes with 0 warnings.
+
+### Core Loop (happy path)
+- [x] **Loading** — database loads, progress bar visible, transitions to MainMenu.
+- [x] **MainMenu** — clean UI, New Game/Continue/Settings/Difficulty/Pet Collection buttons work.
+- [x] **Collecting** → **Constructing** — flat2d skips crystal collection and opens the 2D Constructing panel.
+- [x] **Constructing** — stash visible, typing works (keyboard + buttons), Submit/Backspace work.
+- [x] **RevealingPet** — valid word triggers 2D card flip + particles + pet sprite.
+- [x] **Playing** — pet visible, HUD stats/cards/action buttons render, no 3D overlays.
+- [x] **Questing** — clicking "Talk (Quest)" opens a 2D quest UI, can fill slots and complete a quest.
+- [x] **Battling** — clicking "Explore (Battle)" opens a 2D battle UI, can play cards and resolve battle.
+- [x] **Reviewing** — victory/defeat review panel shows, Enter/click dismisses and returns to Playing.
+
+### Secondary screens
+- [x] **Settings** — reachable from MainMenu, toggles apply, save/load works.
+- [x] **Difficulty** — reachable from MainMenu, grade selection works.
+- [x] **PetCollection** — reachable from MainMenu, shows collected pets, companion button works.
+- [x] **Paywall** — reachable after 10 words in demo; verified with `LITTCG_AUTOPLAY_PAYWALL=1`.
+- [x] **ContinueGame** — loads `save.json` and continues from `Collecting`; verified with `LITTCG_AUTOPLAY_CONTINUE=1` and a test save file.
+
+### Exit criteria
+- [x] Run `cargo test` and `cargo check --features flat2d` with 0 warnings.
+- [x] Provide a list of "works / doesn't work / needs polish" per screen.
+
+### What works / what doesn't / needs polish
+- **Loading / MainMenu / Constructing / RevealingPet / Playing**: Works. Clean 2D UI, no 3D overlays.
+- **Questing**: Works. Quest panel opens, cards fill slots, completes and returns to Playing.
+- **Battling**: Works. Battle HUD shows, playing cards resolves combat, transitions to Reviewing.
+- **Reviewing**: Works. Victory/defeat panel shows, dismisses to Playing.
+- **Settings / Difficulty / PetCollection**: Works. Reachable from MainMenu, HUD hidden, return to MainMenu works.
+- **Paywall**: Works. Demo limit triggers after 10 words; paywall UI shows purchase CTA and return-to-menu button.
+- **ContinueGame**: Works. Loads `save.json` and continues the session from `Collecting`.
+- **Polish gaps**: placeholder pet sprite (colored square), no card art, no enemy sprite in battle, quest/battle text overflows, review panel shows action buttons behind it.
+
+---
+
+## 2D Gray-Box Vertical Slice — Implementation Plan
+
+> Goal: Turn the screen-by-screen flat2d build into a small Pokémon-style overworld RPG that validates the Thesaurus Dance, FACES emotional stance, and literary-device combos before any XR work.
+
+### Phase A — 2D Overworld Skeleton
+- [x] Add an `Exploring` game state (or repurpose `Playing`) as the main 2D field.
+- [x] Create `src/core/overworld.rs` module gated behind `#[cfg(feature = "flat2d")]`.
+- [x] Spawn a 2D orthographic camera and a bounded world plane.
+- [x] Spawn the player avatar as a colored `Sprite` / `Mesh2d` rectangle.
+- [x] Implement WASD / arrow-key movement for the avatar.
+- [x] Implement a smooth camera follow system (copy from official `2d_top_down_camera.rs`).
+- [x] Add simple world bounds so the avatar cannot walk off the map.
+- [x] Keep 3D companion disabled in flat2d; spawn a 2D companion sprite that follows the avatar.
+- [x] Wire `MainMenu → New Game` to enter `Exploring` instead of `Collecting`.
+- [x] Hide the old HUD action buttons during `Exploring`.
+
+### Phase B — World Entities
+- [ ] Add `ScannableObject` component with a word label (e.g., "rock", "tree", "river").
+- [ ] Add an interaction radius check and prompt: *"Press E to scan"*.
+- [ ] On scan, transition to `Constructing` with a stash seeded from the object's word.
+- [ ] After a valid spelling, transition back to `Exploring` and add the card to the deck.
+- [ ] Add `NpcEntity` component with an `npc_name` mapping to `lore_db.json`.
+- [ ] On interact, show a dialogue panel and offer a quest.
+- [ ] Add `WildTypoEntity` component that roams or stands in place.
+- [ ] On avatar-typo overlap, transition to `Battling`.
+- [ ] Add 2-3 districts using background color/rect zones (Garden, Shadow Library, Irony Junction).
+
+### Phase C — Thesaurus Dance Combat
+- [ ] Replace the current single-card battle with the sentence-crafting system.
+- [ ] Add `Plot` resource: `Vec<SpellBookEntry>` with max length 3.
+- [ ] Add an `AltarDropZone` or equivalent hand/altar UI in the 2D battle screen.
+- [ ] Show the enemy word and its weakness hint ("weak to antonyms / verbs").
+- [ ] Render hand cards with word + part-of-speech + synonym hint.
+- [ ] Allow clicking a card to add it to the Plot; allow removing cards.
+- [ ] Show the constructed sentence preview: "[searing] [sword] [strikes]".
+- [ ] Add a "CAST SPELL" button that resolves the Plot.
+- [ ] Implement `detect_literary_devices(plot: &Plot) -> Vec<LiteraryDevice>`:
+  - [ ] Alliteration
+  - [ ] Oxymoron
+  - [ ] Hyperbole
+  - [ ] Palindrome
+  - [ ] Personification (stretch)
+  - [ ] Onomatopoeia (stretch)
+- [ ] Implement FACES face selection buttons in battle:
+  - [ ] Fierce: +20% damage, fire verbs blast
+  - [ ] Joyful: slight heal, group heals
+  - [ ] Calm: no hyperbole recoil, +block
+  - [ ] Angry: +30% damage, self-damage recoil
+- [ ] Update `play_battle_card` (or replace with `cast_plot_spell`) to:
+  - [ ] Compute base damage from POS multipliers.
+  - [ ] Apply synonym/antonym distance vs enemy word.
+  - [ ] Apply literary device multipliers.
+  - [ ] Apply active FACES modifier.
+  - [ ] Deal damage to enemy; enemy deals damage to player if not countered.
+  - [ ] Show a combat log breakdown: base × distance × device × face = final.
+- [ ] Add win/lose transitions: win → `Reviewing`, lose → Tutor Loop quest.
+
+### Phase D — FACES & Companion Polish
+- [ ] Display the active FACES emotion on the 2D companion sprite (color/tint or text label).
+- [ ] Add face-change hotkeys/buttons outside battle too.
+- [ ] Make the companion react to scanning, battles, and quest completion.
+- [ ] Consider upgrading `SlimeFace` enum to a fuller `faces_protocol::FacesState` later.
+
+### Phase E — Quests Reinterpreted
+- [ ] Implement 2D AR Bounties: NPC asks for a concept, player scans a matching object.
+- [ ] Add grammar-slot validation in Mad-Lib quests (reject noun in verb slot).
+- [ ] Show the completed sentence and reward XP based on word fit.
+
+### Phase F — Feedback & Juiciness
+- [ ] Add screen shake on critical hits.
+- [ ] Add simple particle bursts on scan, spell cast, and victory.
+- [ ] Add sound effects for movement, scan, cast, hit, win, lose.
+- [ ] Add a "would you like to continue?" summary after battle/review.
+
+### Phase G — XR Parity & Future-Proofing
+- [ ] Keep all overworld code behind `#[cfg(feature = "flat2d")]` or generic enough to port.
+- [ ] Document the 2D ↔ XR mapping in a new `docs/2D_TO_XR.md` file.
+- [ ] Leave `#[cfg(feature = "xr")]` stubs for pinch, ASL, and holographic spelling.
+
+### Phase H — Verification
+- [ ] `cargo test` passes.
+- [ ] `cargo check --features flat2d` passes with 0 warnings.
+- [ ] Update the autoplay harness to walk through the overworld and capture each new screen.
+- [ ] Manual playtest: explore → scan → spell → battle → quest → review.
+- [ ] Player can lose and be routed to Tutor Loop.

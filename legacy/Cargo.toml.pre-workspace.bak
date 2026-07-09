@@ -1,0 +1,173 @@
+[package]
+name = "lit-tcg"
+version = "0.1.0"
+edition = "2021"
+license = "Proprietary"
+authors = ["Joshua Atkinson"]
+description = "LitTCG — Literary Trading Card Game: spell words to summon pets and battle typos"
+
+[profile.dev]
+opt-level = 1
+
+[lib]
+crate-type = ["lib", "cdylib"]
+name = "lit_tcg"
+
+[[bin]]
+name = "lit-tcg-desktop"
+path = "src/main.rs"
+
+[features]
+default = []
+flat2d = [
+    "bevy/bevy_winit",
+    "bevy/bevy_render",
+    "bevy/bevy_core_pipeline",
+    "bevy/bevy_window",
+    "bevy/bevy_text",
+    "bevy/bevy_ui",
+    "bevy/bevy_sprite",
+    "bevy/bevy_log",
+    "bevy/bevy_state",
+    "bevy/default_font",
+    "bevy/multi_threaded",
+    "bevy/x11",
+    "bevy/wayland",
+]
+desktop = [
+    "tts",
+    "bevy/bevy_winit",
+    "bevy/bevy_pbr",
+    "bevy/bevy_core_pipeline",
+    "bevy/bevy_post_process",
+    "bevy/bevy_window",
+    "bevy/bevy_text",
+    "bevy/bevy_ui",
+    "bevy/bevy_scene",
+    "bevy/bevy_log",
+    "bevy/bevy_state",
+    "bevy/bevy_sprite",
+    "bevy/bevy_gltf",
+    "bevy/bevy_audio",
+    "bevy/multi_threaded",
+    "bevy/default_font",
+    "bevy/tonemapping_luts",
+    "bevy/x11",
+    "bevy/wayland",
+    "bevy/picking",
+    "bevy_panorbit_camera",
+]
+wasm = [
+    "bevy/bevy_winit",
+    "bevy/bevy_pbr",
+    "bevy/bevy_core_pipeline",
+    "bevy/bevy_post_process",
+    "bevy/bevy_window",
+    "bevy/bevy_text",
+    "bevy/bevy_ui",
+    "bevy/bevy_scene",
+    "bevy/bevy_log",
+    "bevy/bevy_state",
+    "bevy/bevy_sprite",
+    "bevy/bevy_gltf",
+    "bevy/bevy_audio",
+    "bevy/multi_threaded",
+    "bevy/default_font",
+    "bevy/tonemapping_luts",
+    "bevy/picking",
+]
+xr = [
+    "bevy/bevy_render",
+    "bevy/bevy_pbr",
+    "bevy/bevy_core_pipeline",
+    "bevy/bevy_post_process",
+    "bevy/bevy_asset",
+    "bevy/bevy_scene",
+    "bevy/bevy_text",
+    "bevy/bevy_ui",
+    "bevy/bevy_mesh",
+    "bevy/bevy_log",
+    "bevy/bevy_state",
+    "bevy/bevy_gltf",
+    "bevy/bevy_audio",
+    "bevy/multi_threaded",
+    "bevy/default_font",
+    "bevy/tonemapping_luts",
+    "bevy/picking",
+    "dep:bevy_mod_xr",
+    "dep:bevy_mod_openxr",
+]
+tts = ["dep:reqwest"]
+
+[target.'cfg(target_arch = "wasm32")'.dependencies]
+web-sys = { version = "0.3", features = ["Window", "Location"] }
+
+[dependencies]
+# Bevy ECS + rendering (minimal — features enabled via feature flags)
+bevy = { version = "0.18.1", default-features = false, features = [
+    "bevy_state", "bevy_pbr", "bevy_sprite", "bevy_render", "bevy_core_pipeline",
+    "bevy_post_process", "bevy_audio",
+    "bevy_asset", "bevy_scene", "bevy_text", "bevy_window", "bevy_mesh",
+    "bevy_ui", "bevy_log", "png", "webgl2", "zstd_rust", "debug",
+] }
+bevy_reflect = "0.18.1"
+log = "0.4"
+getrandom = { version = "0.2.15", features = ["js"] }
+reqwest = { version = "0.12", features = ["json"], optional = true }
+
+# FACES Protocol (local path dep)
+faces-protocol = { path = "crates/faces-protocol", features = ["serde"] }
+
+# XR / OpenXR integration (optional — enabled by `xr` feature)
+bevy_mod_xr = { version = "0.5", optional = true }
+bevy_mod_openxr = { version = "0.5", optional = true, features = ["vulkan"] }
+
+# Desktop camera controls (optional — enabled by `desktop` feature)
+bevy_panorbit_camera = { version = "0.34", optional = true }
+
+# Serialization
+serde = { version = "1.0", features = ["derive"] }
+serde_json = "1.0"
+
+# Error handling
+anyhow = "1.0"
+thiserror = "2.0"
+
+# Logging
+tracing = "0.1"
+tracing-subscriber = { version = "0.3", features = ["env-filter"] }
+
+# Utils
+uuid = { version = "1.0", features = ["v4", "serde"] }
+chrono = { version = "0.4", features = ["serde"] }
+rand = "0.8"
+
+# Android-only dependencies
+[target.'cfg(target_os = "android")'.dependencies]
+bevy = { version = "0.18", default-features = false, features = ["android-native-activity"] }
+android_logger = "0.15"
+jni = { version = "0.21", default-features = false }
+
+[package.metadata.android]
+package = "com.littcg.game"
+build_targets = ["aarch64-linux-android"]
+min_sdk_version = 30
+target_sdk_version = 36
+max_sdk_version = 36
+resources = "res"
+assets = "assets"
+android_manifest_path = "AndroidManifest.xml"
+permissions = [
+    "android.permission.INTERNET",
+    "android.permission.RECORD_AUDIO",
+    "android.permission.CAMERA",
+]
+
+[package.metadata.android.signing.release]
+path = "/home/joshua/.android/debug.keystore"
+keystore_password = "android"
+
+[patch.crates-io]
+# Patch jni 0.22.4 to avoid a startup panic on Android where the JNI exception
+# clears between exception_check() and exception_occurred().
+jni = { path = "crates/jni-0.22.4-android-fix" }

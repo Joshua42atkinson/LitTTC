@@ -641,8 +641,8 @@ fn detect_congruence(state: &FacesState) -> Congruence {
         focus_valence(&state.focus),
         action_valence(&state.action),
     ];
-    let has_positive = valences.iter().any(|v| *v == Valence::Positive);
-    let has_negative = valences.iter().any(|v| *v == Valence::Negative);
+    let has_positive = valences.contains(&Valence::Positive);
+    let has_negative = valences.contains(&Valence::Negative);
     if has_positive && has_negative {
         Congruence::Incongruent
     } else if has_positive || has_negative {

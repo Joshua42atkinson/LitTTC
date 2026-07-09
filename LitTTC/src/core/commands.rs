@@ -51,6 +51,14 @@ pub enum GameCommand {
     /// Dismiss the post-battle review screen and return to exploration.
     DismissReview,
 
+    // ─── DEBUG / COMBAT SIMULATION ───────────────────────────────────────
+    /// Start a debug battle with specific enemy word
+    DebugBattle(String),
+    /// Set the active face for combat testing
+    SetFace(String),
+    /// Print current VAAM metrics
+    PrintVaam,
+
     // ─── MENU ───────────────────────────────────────────────────────────
     /// Start a new game (clear save, begin tutorial, go to Collecting).
     NewGame,
@@ -62,6 +70,8 @@ pub enum GameCommand {
     OpenDifficulty,
     /// Open the pet collection gallery.
     OpenPetCollection,
+    /// Return to the main menu from settings/gallery/difficulty/paywall.
+    ReturnToMenu,
 }
 
 /// Resource that tracks the most recently fired command for debugging and replay.
@@ -97,6 +107,8 @@ pub struct CommandContext<'w> {
     pub meshes: Option<ResMut<'w, Assets<Mesh>>>,
     pub materials: Option<ResMut<'w, Assets<StandardMaterial>>>,
     pub demo: ResMut<'w, crate::paywall::DemoSettings>,
+    pub active_face: Option<Res<'w, crate::components::ActiveFace>>,
+    pub vaam_metrics: Option<ResMut<'w, crate::battle::VaamMetrics>>,
 }
 
 pub fn handle_game_commands(
@@ -124,6 +136,8 @@ pub fn handle_game_commands(
         mut meshes,
         mut materials,
         mut demo,
+        active_face,
+        mut vaam_metrics,
     } = ctx;
 
     for msg in messages.read() {
@@ -139,13 +153,23 @@ pub fn handle_game_commands(
             }
 
             GameCommand::StartBattle => {
-                if *state.get() == GameState::Playing {
+                let allowed = if cfg!(feature = "flat2d") {
+                    *state.get() == GameState::Playing || *state.get() == GameState::Exploring
+                } else {
+                    *state.get() == GameState::Playing
+                };
+                if allowed {
                     crate::battle::start_battle(&mut commands, &db, &grade_manager, &mut next_state, &state);
                 }
             }
 
             GameCommand::StartQuest(npc) => {
-                if *state.get() == GameState::Playing {
+                let allowed = if cfg!(feature = "flat2d") {
+                    *state.get() == GameState::Playing || *state.get() == GameState::Exploring
+                } else {
+                    *state.get() == GameState::Playing
+                };
+                if allowed {
                     crate::quest::start_quest(npc, &db, &grade_manager, &mut commands, &mut next_state, &state);
                 }
             }
@@ -165,6 +189,8 @@ pub fn handle_game_commands(
                                 if idx < hand.cards.len() {
                                     let played_word = hand.cards.remove(idx);
                                     let _typo_word = session.typo_word.clone();
+                                    let face_ref = active_face.as_deref();
+                                    let vaam_ref = vaam_metrics.as_deref_mut();
                                     let result = crate::battle::play_battle_card(
                                         &played_word,
                                         session,
@@ -173,6 +199,8 @@ pub fn handle_game_commands(
                                         &mut next_state,
                                         &sheet,
                                         &state,
+                                        face_ref,
+                                        vaam_ref,
                                     );
                                     if result.is_effective {
                                         commands.spawn(crate::battle::CriticalHitTrigger);
@@ -219,6 +247,8 @@ pub fn handle_game_commands(
                         if *idx < hand.cards.len() {
                             let played_word = hand.cards.remove(*idx);
                             let _typo_word = session.typo_word.clone();
+                            let face_ref = active_face.as_deref();
+                            let vaam_ref = vaam_metrics.as_deref_mut();
                             let result = crate::battle::play_battle_card(
                                 &played_word,
                                 session,
@@ -227,6 +257,8 @@ pub fn handle_game_commands(
                                 &mut next_state,
                                 &sheet,
                                 &state,
+                                face_ref,
+                                vaam_ref,
                             );
                             if result.is_effective {
                                 commands.spawn(crate::battle::CriticalHitTrigger);
@@ -246,16 +278,18 @@ pub fn handle_game_commands(
             GameCommand::FleeBattle => {
                 if *state.get() == GameState::Battling {
                     commands.remove_resource::<crate::battle::BattleSession>();
-                    log_state_transition(state.get(), GameState::Playing);
-                    next_state.set(GameState::Playing);
+                    let next = if cfg!(feature = "flat2d") { GameState::Exploring } else { GameState::Playing };
+                    log_state_transition(state.get(), next.clone());
+                    next_state.set(next);
                 }
             }
 
             GameCommand::CancelQuest => {
                 if *state.get() == GameState::Questing {
                     commands.remove_resource::<crate::quest::QuestSession>();
-                    log_state_transition(state.get(), GameState::Playing);
-                    next_state.set(GameState::Playing);
+                    let next = if cfg!(feature = "flat2d") { GameState::Exploring } else { GameState::Playing };
+                    log_state_transition(state.get(), next.clone());
+                    next_state.set(next);
                 }
             }
 
@@ -285,6 +319,53 @@ pub fn handle_game_commands(
                             warn!("FillQuestSlot card index {} out of bounds", card_idx);
                         }
                     }
+                }
+            }
+
+            GameCommand::DebugBattle(enemy_word) => {
+                if *state.get() == GameState::Playing {
+                    info!("DEBUG: Starting battle against '{}'", enemy_word);
+                    commands.insert_resource(crate::battle::BattleSession {
+                        typo_word: enemy_word.clone(),
+                        typo_health: 100,
+                        player_health: 100,
+                        failed_word: None,
+                    });
+                    // Initialize VAAM metrics if not present
+                    if vaam_metrics.is_none() {
+                        commands.insert_resource(crate::battle::VaamMetrics::default());
+                    }
+                    // Initialize ActiveFace if not present
+                    if active_face.is_none() {
+                        commands.insert_resource(crate::components::ActiveFace::default());
+                    }
+                    crate::commands::log_state_transition(state.get(), GameState::Battling);
+                    next_state.set(GameState::Battling);
+                }
+            }
+
+            GameCommand::SetFace(face_name) => {
+                let face = match face_name.to_lowercase().as_str() {
+                    "fierce" => crate::components::SlimeFace::Fierce,
+                    "joyful" => crate::components::SlimeFace::Joyful,
+                    "calm" => crate::components::SlimeFace::Calm,
+                    "angry" => crate::components::SlimeFace::Angry,
+                    _ => {
+                        warn!("Unknown face: '{}'. Use: fierce, joyful, calm, angry", face_name);
+                        return;
+                    }
+                };
+                commands.insert_resource(crate::components::ActiveFace { face });
+                info!("DEBUG: Set active face to {:?}", face);
+            }
+
+            GameCommand::PrintVaam => {
+                if let Some(ref metrics) = vaam_metrics {
+                    info!("=== VAAM METRICS ===");
+                    info!("{}", metrics.get_summary());
+                    info!("====================");
+                } else {
+                    warn!("No VAAM metrics resource found. Start a battle first.");
                 }
             }
 
@@ -339,8 +420,9 @@ pub fn handle_game_commands(
 
             GameCommand::DismissReview => {
                 if *state.get() == GameState::Reviewing {
-                    log_state_transition(state.get(), GameState::Playing);
-                    next_state.set(GameState::Playing);
+                    let next = if cfg!(feature = "flat2d") { GameState::Exploring } else { GameState::Playing };
+                    log_state_transition(state.get(), next.clone());
+                    next_state.set(next);
                 }
             }
 
@@ -351,8 +433,9 @@ pub fn handle_game_commands(
                         let _ = std::fs::rename("save.json", "save.json.bak");
                     }
                     commands.insert_resource(crate::tutorial::TutorialState { step: 0, active: true });
-                    log_state_transition(state.get(), GameState::Collecting);
-                    next_state.set(GameState::Collecting);
+                    let next = if cfg!(feature = "flat2d") { GameState::Exploring } else { GameState::Collecting };
+                    log_state_transition(state.get(), next.clone());
+                    next_state.set(next);
                 }
             }
 
@@ -384,6 +467,13 @@ pub fn handle_game_commands(
                 }
             }
 
+            GameCommand::ReturnToMenu => {
+                if matches!(*state.get(), GameState::Settings | GameState::Difficulty | GameState::PetCollection | GameState::Paywall) {
+                    log_state_transition(state.get(), GameState::MainMenu);
+                    next_state.set(GameState::MainMenu);
+                }
+            }
+
         }
     }
 }
@@ -412,6 +502,7 @@ mod tests {
             GameCommand::OpenSettings,
             GameCommand::OpenDifficulty,
             GameCommand::OpenPetCollection,
+            GameCommand::ReturnToMenu,
         ];
         // Every variant must be PartialEq so this compiles and asserts equality.
         assert_eq!(commands, commands.clone());

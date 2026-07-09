@@ -1,0 +1,72 @@
+[gd_scene load_steps=2 format=3]
+
+[ext_resource type="Script" path="res://scenes/spelling.gd" id="1_3vxy3"]
+
+[node name="Spelling" type="Control"]
+layout_mode = 3
+anchors_preset = 15
+anchor_right = 1.0
+anchor_bottom = 1.0
+grow_horizontal = 2
+grow_vertical = 2
+script = ExtResource("1_3vxy3")
+
+[node name="ColorRect" type="ColorRect" parent="."]
+layout_mode = 1
+anchors_preset = 15
+anchor_right = 1.0
+anchor_bottom = 1.0
+grow_horizontal = 2
+grow_vertical = 2
+color = Color(0.0588235, 0.0588235, 0.172549, 1)
+
+[node name="VBoxContainer" type="VBoxContainer" parent="."]
+layout_mode = 1
+anchors_preset = 8
+anchor_left = 0.5
+anchor_top = 0.5
+anchor_right = 0.5
+anchor_bottom = 0.5
+offset_left = -50.0
+offset_top = -60.0
+offset_right = 50.0
+offset_bottom = 60.0
+grow_horizontal = 2
+grow_vertical = 2
+theme_override_constants/separation = 8
+
+[node name="Title" type="Label" parent="VBoxContainer"]
+layout_mode = 2
+text = "Spell the word"
+horizontal_alignment = 1
+
+[node name="WordLabel" type="Label" parent="VBoxContainer"]
+layout_mode = 2
+text = "???"
+horizontal_alignment = 1
+
+[node name="ElementLabel" type="Label" parent="VBoxContainer"]
+layout_mode = 2
+text = "Element: --"
+horizontal_alignment = 1
+
+[node name="PetPreview" type="ColorRect" parent="VBoxContainer"]
+custom_minimum_size = Vector2(64, 64)
+layout_mode = 2
+color = Color(0.5, 0.5, 0.5, 1)
+
+[node name="SynonymsLabel" type="Label" parent="VBoxContainer"]
+layout_mode = 2
+text = "Synonyms:"
+horizontal_alignment = 1
+autowrap_mode = 3
+
+[node name="Spacer" type="Control" parent="VBoxContainer"]
+layout_mode = 2
+size_flags_vertical = 3
+
+[node name="SummonButton" type="Button" parent="VBoxContainer"]
+layout_mode = 2
+text = "Summon Pet"
+
+[connection signal="pressed" from="VBoxContainer/SummonButton" to="." method="_on_summon_pressed"]

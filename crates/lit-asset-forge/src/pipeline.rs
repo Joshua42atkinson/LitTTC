@@ -75,6 +75,7 @@ impl ForgePipeline {
     /// If `prompt_override` is provided, the LLM prompt-crafting step is skipped.
     /// Lore is generated first (LLM if available, otherwise deterministic) and
     /// fed into the image prompt only when LLM mode is used.
+    #[allow(clippy::too_many_arguments)]
     pub async fn generate_portrait(
         &self,
         word: &str,

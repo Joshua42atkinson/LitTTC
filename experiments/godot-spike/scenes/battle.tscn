@@ -1,0 +1,100 @@
+[gd_scene load_steps=2 format=3]
+
+[ext_resource type="Script" path="res://scenes/battle.gd" id="1_kd6jr"]
+
+[node name="Battle" type="Control"]
+layout_mode = 3
+anchors_preset = 15
+anchor_right = 1.0
+anchor_bottom = 1.0
+grow_horizontal = 2
+grow_vertical = 2
+script = ExtResource("1_kd6jr")
+
+[node name="ColorRect" type="ColorRect" parent="."]
+layout_mode = 1
+anchors_preset = 15
+anchor_right = 1.0
+anchor_bottom = 1.0
+grow_horizontal = 2
+grow_vertical = 2
+color = Color(0.0588235, 0.0588235, 0.172549, 1)
+
+[node name="VBoxContainer" type="VBoxContainer" parent="."]
+layout_mode = 1
+anchors_preset = 8
+anchor_left = 0.5
+anchor_top = 0.5
+anchor_right = 0.5
+anchor_bottom = 0.5
+offset_left = -60.0
+offset_top = -70.0
+offset_right = 60.0
+offset_bottom = 70.0
+grow_horizontal = 2
+grow_vertical = 2
+theme_override_constants/separation = 8
+
+[node name="Title" type="Label" parent="VBoxContainer"]
+layout_mode = 2
+text = "Battle!"
+horizontal_alignment = 1
+
+[node name="BarsContainer" type="HBoxContainer" parent="VBoxContainer"]
+layout_mode = 2
+theme_override_constants/separation = 8
+
+[node name="PlayerColumn" type="VBoxContainer" parent="VBoxContainer/BarsContainer"]
+layout_mode = 2
+size_flags_horizontal = 3
+theme_override_constants/separation = 4
+
+[node name="PlayerWord" type="Label" parent="VBoxContainer/BarsContainer/PlayerColumn"]
+layout_mode = 2
+text = "???"
+horizontal_alignment = 1
+
+[node name="PlayerHealth" type="Label" parent="VBoxContainer/BarsContainer/PlayerColumn"]
+layout_mode = 2
+text = "HP: --/--"
+horizontal_alignment = 1
+
+[node name="PlayerPet" type="ColorRect" parent="VBoxContainer/BarsContainer/PlayerColumn"]
+custom_minimum_size = Vector2(32, 32)
+layout_mode = 2
+color = Color(0.3, 0.6, 0.9, 1)
+
+[node name="EnemyColumn" type="VBoxContainer" parent="VBoxContainer/BarsContainer"]
+layout_mode = 2
+size_flags_horizontal = 3
+theme_override_constants/separation = 4
+
+[node name="EnemyWord" type="Label" parent="VBoxContainer/BarsContainer/EnemyColumn"]
+layout_mode = 2
+text = "TYPO"
+horizontal_alignment = 1
+
+[node name="EnemyHealth" type="Label" parent="VBoxContainer/BarsContainer/EnemyColumn"]
+layout_mode = 2
+text = "HP: --/--"
+horizontal_alignment = 1
+
+[node name="EnemyPet" type="ColorRect" parent="VBoxContainer/BarsContainer/EnemyColumn"]
+custom_minimum_size = Vector2(32, 32)
+layout_mode = 2
+color = Color(0.9, 0.2, 0.1, 1)
+
+[node name="ResultLabel" type="Label" parent="VBoxContainer"]
+layout_mode = 2
+text = ""
+horizontal_alignment = 1
+
+[node name="Spacer" type="Control" parent="VBoxContainer"]
+layout_mode = 2
+size_flags_vertical = 3
+
+[node name="AttackButton" type="Button" parent="VBoxContainer"]
+layout_mode = 2
+text = "Attack!"
+
+[connection signal="pressed" from="VBoxContainer/AttackButton" to="." method="_on_attack_pressed"]

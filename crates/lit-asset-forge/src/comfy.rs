@@ -57,6 +57,7 @@ impl ComfyClient {
     }
 
     /// Submit a LongCat text-to-image workflow and return the prompt_id.
+    #[allow(clippy::too_many_arguments)]
     pub async fn submit_longcat_workflow(
         &self,
         model: &str,
@@ -212,6 +213,7 @@ pub struct ComfyOutput {
 }
 
 /// Build the JSON node graph for LongCat-Image text-to-image.
+#[allow(clippy::too_many_arguments)]
 fn build_longcat_workflow(
     model: &str,
     prompt: &str,

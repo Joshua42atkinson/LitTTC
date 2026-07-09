@@ -335,6 +335,21 @@ mod tests {
 }
 
 impl Element {
+    #[cfg(feature = "flat2d")]
+    pub fn color(&self) -> Color {
+        // NES-style 8-bit palette for the 2D pixel-art look.
+        match self {
+            Element::Fire => Color::srgb(0.90, 0.36, 0.04),
+            Element::Water => Color::srgb(0.24, 0.74, 0.99),
+            Element::Earth => Color::srgb(0.42, 0.39, 0.31),
+            Element::Air => Color::srgb(0.69, 0.94, 0.99),
+            Element::Shadow => Color::srgb(0.27, 0.00, 0.63),
+            Element::Light => Color::srgb(0.99, 0.90, 0.64),
+            Element::Normal => Color::srgb(0.72, 0.72, 0.72),
+        }
+    }
+
+    #[cfg(not(feature = "flat2d"))]
     pub fn color(&self) -> Color {
         match self {
             Element::Fire => Color::srgb(0.94, 0.27, 0.27),
@@ -427,6 +442,7 @@ pub enum GameState {
     Collecting,
     Constructing,
     Playing,
+    Exploring,
     Questing,
     Battling,
     Reviewing,
@@ -449,3 +465,122 @@ pub struct DraggableCard {
     pub touch_id: Option<u64>,
 }
 
+// ─── PHASE 1: 2D GRAY-BOX COMBAT COMPONENTS ────────────────────────
+
+/// Target Dummy for Phase 1 combat testing
+#[derive(Component)]
+pub struct TargetDummy {
+    pub hp: i32,
+    pub max_hp: i32,
+    pub prompt_word: String,
+}
+
+/// Hand card button for 2D UI
+#[derive(Component)]
+pub struct HandCardButton {
+    pub word: String,
+    pub part_of_speech: crate::deck::PartOfSpeech,
+    pub index: usize,
+}
+
+/// Altar drop-zone for spell casting
+#[derive(Component)]
+pub struct AltarDropZone {
+    pub active_card: Option<String>,
+}
+
+/// Cast spell button
+#[derive(Component)]
+pub struct CastSpellButton;
+
+/// Face/emotion button for Slime
+#[derive(Component)]
+pub struct FaceButton {
+    pub face: SlimeFace,
+}
+
+/// Slime face/emotion states
+#[derive(Component, Clone, Copy, PartialEq, Eq, Debug, Default)]
+pub enum SlimeFace {
+    #[default]
+    Fierce,
+    Joyful,
+    Calm,
+    Angry,
+}
+
+/// Combat log entry
+#[derive(Component)]
+pub struct CombatLogEntry {
+    pub text: String,
+    pub log_type: LogType,
+}
+
+/// Log type for color coding
+#[derive(Component, Clone, Copy, PartialEq, Eq)]
+pub enum LogType {
+    Effective,   // green
+    Ineffective, // red
+    Critical,    // gold
+    Info,        // white
+}
+
+// ─── PHASE 1: RESOURCES ─────────────────────────────────────────────
+
+/// Active Slime face for combat
+#[derive(Resource, Default)]
+pub struct ActiveFace {
+    pub face: SlimeFace,
+}
+
+/// Gray-box battle session
+#[derive(Resource)]
+pub struct GrayBoxBattleSession {
+    pub dummy_hp: i32,
+    pub player_hp: i32,
+    pub prompt_word: String,
+    pub turn: BattleTurn,
+}
+
+#[derive(Clone, Copy, PartialEq, Eq)]
+pub enum BattleTurn {
+    Player,
+    Enemy,
+}
+
+// ─── PHASE 1: EVENTS ───────────────────────────────────────────────
+
+/// Event when card is played to altar
+#[derive(Event)]
+pub struct CardPlayedToAltar {
+    pub word: String,
+}
+
+/// Event when spell is cast
+#[derive(Event)]
+pub struct SpellCast {
+    pub word: String,
+    pub face: SlimeFace,
+}
+
+/// Event when face is changed
+#[derive(Event)]
+pub struct FaceChanged {
+    pub new_face: SlimeFace,
+}
+
+/// Event for battle actions with damage math
+#[derive(Event)]
+pub struct BattleAction {
+    pub action_type: BattleActionType,
+    pub damage: i32,
+    pub math_breakdown: String,
+}
+
+#[derive(Clone, Copy, PartialEq, Eq)]
+pub enum BattleActionType {
+    SynonymAttack,
+    AntonymBlock,
+    NormalAttack,
+    EnemyAttack,
+}

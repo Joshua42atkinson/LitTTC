@@ -10,7 +10,9 @@ use crate::components::*;
 use faces_protocol::FacesState;
 
 const DEFAULT_REVEAL_DURATION: f32 = 1.5;
+#[cfg(not(feature = "flat2d"))]
 const CARD_SIZE: Vec3 = Vec3::new(1.0, 1.4, 0.05);
+#[cfg(not(feature = "flat2d"))]
 const CARD_POSITION: Vec3 = PET_SPAWN_POSITION;
 const PET_POSITION: Vec3 = PET_SPAWN_POSITION;
 const FLIP_THRESHOLD: f32 = 0.5; // t value at which particles/sound trigger
@@ -146,10 +148,10 @@ fn spawn_reveal_card(
         Name::new("Reveal Card 2D"),
         Sprite {
             color: Color::srgb(0.2, 0.1, 0.4),
-            custom_size: Some(Vec2::new(CARD_SIZE.x * 100.0, CARD_SIZE.y * 100.0)),
+            custom_size: Some(Vec2::new(256.0, 358.0)),
             ..default()
         },
-        Transform::from_translation(CARD_POSITION).with_scale(Vec3::new(-1.0, 1.0, 1.0)),
+        Transform::from_translation(Vec3::new(0.0, 0.0, 1.0)).with_scale(Vec3::new(-1.0, 1.0, 1.0)),
         RevealCard {
             timer: 0.0,
             word: pending.word,
@@ -248,8 +250,9 @@ fn finish_reveal(
         spawn_revealed_pet(&mut commands, &mut meshes, &mut materials, card);
         commands.entity(entity).despawn();
         commands.remove_resource::<PendingReveal>();
-        crate::commands::log_state_transition(&GameState::RevealingPet, GameState::Playing);
-        next_state.set(GameState::Playing);
+        let next = if cfg!(feature = "flat2d") { GameState::Exploring } else { GameState::Playing };
+        crate::commands::log_state_transition(&GameState::RevealingPet, next.clone());
+        next_state.set(next);
     }
 }
 
