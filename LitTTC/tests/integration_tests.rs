@@ -269,6 +269,111 @@ fn test_local_save_system() {
 }
 
 #[test]
+fn test_e2e_playthrough_generates_telemetry_and_save() {
+    let _guard = SAVE_FILE_LOCK.lock().unwrap_or_else(|p| p.into_inner());
+    let _ = std::fs::remove_file("save.json");
+    let _ = std::fs::remove_file("save.json.bak");
+
+    let db = GameDatabase::load_from_embedded().expect("embedded database should load");
+
+    // 1. Initialize learner state.
+    let mut sheet = CharacterSheet::default();
+    let mut spellbook = SpellBook::default();
+    let mut trail = WordTrail::default();
+    let mut metrics = VaamMetrics::default();
+    let mut slime_level = SlimeLevel::default();
+
+    // 2. Spell / encounter a word.
+    spellbook.record_encounter("clarity", Channel::Mind, None, None, None, None);
+    trail.visited_words.push("clarity".to_string());
+    trail.current_word = Some("clarity".to_string());
+    metrics.record_word_encounter("clarity");
+
+    // 3. Start and complete a one-slot quest.
+    let npc_quest = db.quests.npc_chains.get("Barnaby")
+        .expect("Barnaby chain exists")
+        .first()
+        .expect("Barnaby has at least one quest")
+        .clone();
+
+    let mut session = QuestSession {
+        title: npc_quest.title,
+        template: npc_quest.template,
+        slots: vec!["ADJECTIVE".to_string()],
+        filled_slots: HashMap::new(),
+        xp_reward: npc_quest.rewards.xp,
+        expected_faces: npc_quest.expected_faces,
+        socratic_failure: npc_quest.socratic_failure,
+        subject: npc_quest.subject,
+        scenario_text: npc_quest.scenario_text,
+    };
+
+    let fill_result = quest::fill_slot(0, "brave", None, &mut session, &db, Some(&spellbook));
+    assert!(fill_result.is_none(), "'brave' should fit the ADJECTIVE slot");
+
+    let mut next_state = NextState::default();
+    let mut command_queue = bevy::ecs::world::CommandQueue::default();
+    let mut world = World::new();
+    let mut commands = Commands::new(&mut command_queue, &world);
+    let mut grade_manager = quest::GradeManager::default();
+    let state = State::new(GameState::Questing);
+
+    let quest_grades = quest::complete_quest(
+        &session,
+        &mut sheet,
+        &mut spellbook,
+        &mut grade_manager,
+        &db,
+        &mut next_state,
+        &mut commands,
+        &state,
+        Some(&mut metrics),
+        &mut slime_level,
+    );
+    assert!(quest_grades.syntax > 0.0, "Quest should award a syntax grade");
+    assert!(sheet.total_xp > 0, "Quest should award XP");
+    assert!(!metrics.telemetry.cast_log.is_empty(), "Quest should record telemetry");
+    assert!(!metrics.ccss_coverage.is_empty(), "Quest should update CCSS coverage");
+
+    // 4. Enter battle and cast a card.
+    let mut battle_session = BattleSession {
+        typo_word: "abandoned".to_string(),
+        typo_health: 100,
+        player_health: 100,
+        failed_word: None,
+    };
+    let battle_state = State::new(GameState::Battling);
+    let active_face = ActiveFace { face: SlimeFace::Angry, faces: SlimeFace::Angry.to_faces_state() };
+
+    let cast_count_before = metrics.telemetry.cast_log.len();
+    let battle_result = battle::play_battle_card(
+        "left",
+        &mut battle_session,
+        &db,
+        &mut spellbook,
+        &mut next_state,
+        &sheet,
+        &battle_state,
+        Some(&active_face),
+        Some(&mut metrics),
+        &mut slime_level,
+    );
+    assert!(battle_result.is_effective, "Battle card should be effective");
+    assert!(metrics.telemetry.cast_log.len() > cast_count_before, "Battle should append telemetry");
+
+    // 5. Save and reload, verifying telemetry persistence.
+    let save_result = save::save_game(&sheet, &spellbook, &trail, &metrics);
+    assert!(save_result.is_ok(), "Save should succeed after playthrough");
+
+    let loaded = save::load_game().expect("load should succeed");
+    assert!(loaded.vaam_metrics.telemetry.cast_log.len() >= 2, "Telemetry should persist");
+    assert!(!loaded.vaam_metrics.ccss_coverage.is_empty(), "CCSS coverage should persist");
+
+    // Clean up temporary save file
+    let _ = std::fs::remove_file("save.json");
+}
+
+#[test]
 fn test_pet_chat_taming() {
     use lit_tcg::chat::{self, ChatLog};
     use faces_protocol::{Focus, Action};

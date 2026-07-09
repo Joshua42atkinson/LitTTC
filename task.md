@@ -442,3 +442,4 @@ Added unit and integration tests across the engine. Test count: 39 → 128 (48 u
 - [x] Phases 8, 9, 10, 11, and 12 are fully checked off.
 - [x] Final `cargo test` passes.
 - [x] `walkthrough.md` updated with a summary of all completed phases.
+- [x] New e2e playthrough integration test added: `test_e2e_playthrough_generates_telemetry_and_save`.

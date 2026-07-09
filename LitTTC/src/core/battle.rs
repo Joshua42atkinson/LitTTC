@@ -1629,7 +1629,7 @@ fn cleanup_battle_ui_2d(
 struct GrayBoxFeedbackText;
 
 #[derive(Resource, Default)]
-struct GrayBoxFeedback {
+pub(crate) struct GrayBoxFeedback {
     last_cast_summary: Option<String>,
 }
 
