@@ -35,6 +35,14 @@ pub enum GameCommand {
     /// Retreat from the current battle.
     FleeBattle,
 
+    // ─── THESAURUS DANCE (SENTENCE CRAFTING) ────────────────────────────
+    /// Add the card at the given hand index to the battle Plot.
+    AddToPlot(usize),
+    /// Remove the card at the given Plot index.
+    RemoveFromPlot(usize),
+    /// Cast the constructed sentence as a single attack.
+    CastSentence,
+
     // ─── QUEST ──────────────────────────────────────────────────────────
     /// Start a quest from the named NPC.
     StartQuest(String),
@@ -96,6 +104,7 @@ pub struct CommandContext<'w> {
     pub sheet: ResMut<'w, crate::components::CharacterSheet>,
     pub trail: ResMut<'w, crate::components::WordTrail>,
     pub session_battle: Option<ResMut<'w, crate::battle::BattleSession>>,
+    pub plot: Option<ResMut<'w, crate::battle::Plot>>,
     pub session_quest: Option<ResMut<'w, crate::quest::QuestSession>>,
     pub hand: ResMut<'w, crate::components::Hand>,
     pub deck: Option<ResMut<'w, crate::components::Deck>>,
@@ -126,6 +135,7 @@ pub fn handle_game_commands(
         mut sheet,
         mut trail,
         mut session_battle,
+        mut plot,
         mut session_quest,
         mut hand,
         mut deck,
@@ -282,9 +292,59 @@ pub fn handle_game_commands(
             GameCommand::FleeBattle => {
                 if *state.get() == GameState::Battling {
                     commands.remove_resource::<crate::battle::BattleSession>();
+                    commands.remove_resource::<crate::battle::Plot>();
                     let next = if cfg!(feature = "flat2d") { GameState::Exploring } else { GameState::Playing };
                     log_state_transition(state.get(), next.clone());
                     next_state.set(next);
+                }
+            }
+
+            GameCommand::AddToPlot(idx) => {
+                if *state.get() == GameState::Battling {
+                    if let Some(ref mut p) = plot {
+                        if *idx < hand.cards.len() && p.cards.len() < p.max_size {
+                            let word = hand.cards.remove(*idx);
+                            p.cards.push(word.clone());
+                            info!("Added '{}' to the Plot. Sentence: {}", word, p.sentence_preview());
+                            hand.selected = None;
+                        } else {
+                            warn!("AddToPlot index {} out of bounds or Plot full", idx);
+                        }
+                    }
+                }
+            }
+
+            GameCommand::RemoveFromPlot(idx) => {
+                if *state.get() == GameState::Battling {
+                    if let Some(ref mut p) = plot {
+                        if *idx < p.cards.len() {
+                            let word = p.cards.remove(*idx);
+                            hand.cards.push(word.clone());
+                            info!("Removed '{}' from the Plot. Sentence: {}", word, p.sentence_preview());
+                        } else {
+                            warn!("RemoveFromPlot index {} out of bounds", idx);
+                        }
+                    }
+                }
+            }
+
+            GameCommand::CastSentence => {
+                if *state.get() == GameState::Battling {
+                    if let Some(ref mut session) = session_battle {
+                        let face_ref = active_face.as_deref();
+                        let vaam_ref = vaam_metrics.as_deref_mut();
+                        crate::battle::cast_sentence(
+                            session,
+                            plot.as_deref_mut(),
+                            &db,
+                            &mut spellbook,
+                            &mut next_state,
+                            &sheet,
+                            &state,
+                            face_ref,
+                            vaam_ref,
+                        );
+                    }
                 }
             }
 

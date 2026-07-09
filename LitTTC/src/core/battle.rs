@@ -197,6 +197,30 @@ pub struct BattleSession {
     pub failed_word: Option<String>, // Track word that caused defeat for Tutor Loop
 }
 
+/// The player's sentence-in-progress during Thesaurus Dance combat.
+/// A complete sentence is an adjective + noun + verb trio (max 3 cards).
+#[derive(Resource, Debug, Clone, Default)]
+pub struct Plot {
+    pub cards: Vec<String>,
+    pub max_size: usize,
+}
+
+impl Plot {
+    pub fn new() -> Self {
+        Self { cards: Vec::new(), max_size: 3 }
+    }
+
+    pub fn sentence_preview(&self) -> String {
+        match self.cards.len() {
+            0 => "[ ... ] [ ... ] [ ... ]".to_string(),
+            1 => format!("[ {} ] [ ... ] [ ... ]", self.cards[0]),
+            2 => format!("[ {} ] [ {} ] [ ... ]", self.cards[0], self.cards[1]),
+            3 => format!("[ {} ] [ {} ] [ {} ]", self.cards[0], self.cards[1], self.cards[2]),
+            _ => self.cards.join(" "),
+        }
+    }
+}
+
 #[derive(Component)]
 pub struct CriticalHitTrigger;
 
@@ -301,6 +325,7 @@ pub fn start_battle(
         player_health: 100,
         failed_word: None,
     });
+    commands.insert_resource(Plot::new());
 
     info!("A wild Typo ({}) emerges! Deduce its semantic weakness based on its stats!", typo_word.to_uppercase());
     crate::commands::log_state_transition(state.get(), GameState::Battling);
@@ -502,11 +527,144 @@ pub fn play_battle_card(
     }
 }
 
+/// Resolve the Thesaurus Dance Plot as one cohesive sentence attack.
+///
+/// Damage is summed from each card, then amplified by sentence-level combos
+/// (alliteration, palindrome, oxymoron, hyperbole) and the active FACES stance.
+#[allow(clippy::too_many_arguments)]
+pub fn cast_sentence(
+    session: &mut BattleSession,
+    plot: Option<&mut Plot>,
+    db: &GameDatabase,
+    spellbook: &mut SpellBook,
+    next_state: &mut NextState<GameState>,
+    _sheet: &CharacterSheet,
+    state: &State<GameState>,
+    active_face: Option<&ActiveFace>,
+    mut vaam_metrics: Option<&mut VaamMetrics>,
+) {
+    let plot = match plot {
+        Some(p) => p,
+        None => {
+            warn!("CastSentence called with no Plot resource");
+            return;
+        }
+    };
+
+    if plot.cards.is_empty() {
+        warn!("Cannot cast an empty sentence. Add words to the Plot first.");
+        return;
+    }
+
+    let lower_typo = session.typo_word.to_lowercase();
+    let typo_stats = db.words.get(&lower_typo);
+
+    let mut total_damage: i32 = 0;
+    let mut sentence_multiplier = 1.0;
+    let mut recoil = 0;
+    let mut reflection = 0;
+    let mut logged_words: Vec<String> = Vec::new();
+
+    for word in &plot.cards {
+        let lower_word = word.to_lowercase();
+        logged_words.push(word.clone());
+
+        let mut card_multiplier = 1.0;
+        if let (Some(t_stats), Some(w_stats)) = (typo_stats, db.words.get(&lower_word)) {
+            let distance = semantic_distance(t_stats, w_stats);
+            if distance > 4.0 {
+                card_multiplier *= WAND_DUEL_DISTANCE_BASE_MULTIPLIER + (distance - 4.0) * WAND_DUEL_DISTANCE_SCALE;
+            } else if distance < 2.0 {
+                card_multiplier *= SYNONYM_BOOST_MULTIPLIER;
+            }
+
+            match w_stats.part_of_speech.to_lowercase().as_str() {
+                "noun" => card_multiplier *= NOUN_SUMMON_MULTIPLIER,
+                "adjective" => card_multiplier *= ADJECTIVE_AURA_MULTIPLIER,
+                "verb" => card_multiplier *= VERB_ACTION_MULTIPLIER,
+                _ => {}
+            }
+        }
+
+        if is_oxymoron(&session.typo_word, word, db) {
+            sentence_multiplier *= OXYMORON_ARMOR_PIERCING;
+            if let Some(ref mut metrics) = vaam_metrics {
+                metrics.record_literary_device("oxymoron");
+            }
+        }
+        if is_hyperbole(word, db) {
+            sentence_multiplier *= HYPERBOLE_OVERCHARGE;
+            recoil += HYPERBOLE_RECOIL_DAMAGE;
+            if let Some(ref mut metrics) = vaam_metrics {
+                metrics.record_literary_device("hyperbole");
+            }
+        }
+        if is_palindrome(word) {
+            reflection += (BASE_DAMAGE * card_multiplier * PALINDROME_REFLECTION_PERCENT) as i32;
+            if let Some(ref mut metrics) = vaam_metrics {
+                metrics.record_literary_device("palindrome");
+            }
+        }
+
+        total_damage += (BASE_DAMAGE * card_multiplier) as i32;
+        spellbook.upgrade_mastery(word, MasteryLevel::Owned);
+        if let Some(ref mut metrics) = vaam_metrics {
+            metrics.record_successful_acquisition(word, card_multiplier);
+        }
+    }
+
+    // Sentence-level alliteration bonus.
+    let refs: Vec<&str> = plot.cards.iter().map(|s| s.as_str()).collect();
+    if is_alliteration(&refs) {
+        sentence_multiplier *= 1.2;
+        info!("ALLITERATION! The verse flows with matching sounds (+20%)");
+        if let Some(ref mut metrics) = vaam_metrics {
+            metrics.record_literary_device("alliteration");
+        }
+    }
+
+    // Apply FACES emotional stance once to the whole sentence.
+    if let Some(face) = active_face {
+        match face.face {
+            SlimeFace::Fierce => sentence_multiplier *= 1.2,
+            SlimeFace::Joyful => sentence_multiplier *= 1.1,
+            SlimeFace::Calm => sentence_multiplier *= 1.0,
+            SlimeFace::Angry => sentence_multiplier *= 1.3,
+        }
+    }
+
+    let final_damage = (total_damage as f32 * sentence_multiplier) as i32 + reflection;
+    session.typo_health -= final_damage;
+    session.player_health -= recoil;
+
+    info!("CAST SENTENCE: '{}' deals {} damage. Typo health: {}/{}",
+        plot.cards.join(" "), final_damage, session.typo_health, TYPO_MAX_HEALTH);
+
+    plot.cards.clear();
+
+    if session.typo_health <= 0 {
+        info!("VICTORY! The crafted sentence purified '{}'.", session.typo_word);
+        for word in &logged_words {
+            spellbook.upgrade_mastery(word, MasteryLevel::Mastered);
+        }
+        crate::commands::log_state_transition(state.get(), GameState::Reviewing);
+        next_state.set(GameState::Reviewing);
+    } else if session.player_health <= 0 {
+        warn!("DEFEAT! '{}' corrupted the verse. Entering Tutor Loop.", session.typo_word);
+        session.failed_word = Some(session.typo_word.clone());
+        crate::commands::log_state_transition(state.get(), GameState::Questing);
+        next_state.set(GameState::Questing);
+    }
+}
+
 #[derive(Component)]
 pub struct PlayerHealthBar;
 
 #[derive(Component)]
 pub struct EnemyHealthBar;
+
+#[derive(Component)]
+pub struct PlotPreviewText;
 
 #[derive(Component)]
 pub struct BattleUiMarker;
@@ -799,14 +957,31 @@ fn spawn_battle_ui_2d(
                 TextColor(Color::srgb(0.8, 0.2, 0.2)),
             ));
         });
+
+        // Plot / sentence preview
+        parent.spawn((
+            PlotPreviewText,
+            Text::new("[ ... ] [ ... ] [ ... ]"),
+            TextFont { font_size: 28.0, ..default() },
+            TextColor(Color::srgb(0.6, 0.8, 1.0)),
+        ));
+
+        // Hint line
+        parent.spawn((
+            Text::new("Weak to antonyms (far meaning) and verbs."),
+            TextFont { font_size: 18.0, ..default() },
+            TextColor(Color::srgb(0.7, 0.7, 0.7)),
+        ));
     });
 }
 
 #[cfg(not(feature = "xr"))]
 fn update_battle_hp_bars_2d(
     session: Option<Res<BattleSession>>,
-    mut player_bar: Query<&mut Text, (With<PlayerHealthBar>, Without<EnemyHealthBar>)>,
-    mut enemy_bar: Query<&mut Text, (With<EnemyHealthBar>, Without<PlayerHealthBar>)>,
+    plot: Option<Res<Plot>>,
+    mut player_bar: Query<&mut Text, (With<PlayerHealthBar>, Without<EnemyHealthBar>, Without<PlotPreviewText>)>,
+    mut enemy_bar: Query<&mut Text, (With<EnemyHealthBar>, Without<PlayerHealthBar>, Without<PlotPreviewText>)>,
+    mut plot_text: Query<&mut Text, With<PlotPreviewText>>,
 ) {
     let session = match session {
         Some(s) => s,
@@ -816,9 +991,15 @@ fn update_battle_hp_bars_2d(
     if let Some(mut text) = player_bar.iter_mut().next() {
         text.0 = format!("Player HP: {}", session.player_health);
     }
-    
+
     if let Some(mut text) = enemy_bar.iter_mut().next() {
         text.0 = format!("Typo HP: {}", session.typo_health);
+    }
+
+    if let Some(p) = plot {
+        if let Some(mut text) = plot_text.iter_mut().next() {
+            text.0 = p.sentence_preview();
+        }
     }
 }
 

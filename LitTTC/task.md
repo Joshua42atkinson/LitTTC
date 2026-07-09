@@ -391,13 +391,14 @@ Added unit and integration tests across the engine. Test count: 39 → 128 (48 u
 - [x] Add 2-3 districts using background color/rect zones (Garden, Shadow Library, Irony Junction).
 
 ### Phase C — Thesaurus Dance Combat
-- [ ] Replace the current single-card battle with the sentence-crafting system.
-- [ ] Add `Plot` resource: `Vec<SpellBookEntry>` with max length 3.
-- [ ] Add an `AltarDropZone` or equivalent hand/altar UI in the 2D battle screen.
-- [ ] Show the enemy word and its weakness hint ("weak to antonyms / verbs").
+- [x] Replace the current single-card battle with the sentence-crafting system.
+- [x] Add `Plot` resource with max length 3.
+- [x] Add a live sentence preview + weakness hint in the 2D battle screen.
+- [/] Add an `AltarDropZone` or equivalent hand/altar UI in the 2D battle screen.
+- [x] Show the enemy word and its weakness hint ("weak to antonyms / verbs").
 - [ ] Render hand cards with word + part-of-speech + synonym hint.
 - [ ] Allow clicking a card to add it to the Plot; allow removing cards.
-- [ ] Show the constructed sentence preview: "[searing] [sword] [strikes]".
+- [x] Show the constructed sentence preview: "[searing] [sword] [strikes]".
 - [ ] Add a "CAST SPELL" button that resolves the Plot.
 - [ ] Implement `detect_literary_devices(plot: &Plot) -> Vec<LiteraryDevice>`:
   - [ ] Alliteration

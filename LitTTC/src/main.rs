@@ -409,8 +409,11 @@ fn autoplay_system(
         }
         GameState::Battling => {
             if battle_session.is_some() {
-                writer.write(crate::commands::GameCommand::SelectCard(0));
-                writer.write(crate::commands::GameCommand::PlayCard);
+                // Thesaurus Dance: build a sentence and cast it.
+                writer.write(crate::commands::GameCommand::AddToPlot(0));
+                writer.write(crate::commands::GameCommand::AddToPlot(0));
+                writer.write(crate::commands::GameCommand::AddToPlot(0));
+                writer.write(crate::commands::GameCommand::CastSentence);
                 autoplay.timer.set_duration(std::time::Duration::from_secs(1));
                 autoplay.timer.reset();
             }
