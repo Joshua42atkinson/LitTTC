@@ -239,6 +239,14 @@ pub fn complete_quest(
         // Record stealth-assessment telemetry for this filled slot.
         if let Some(ref mut metrics) = vaam_metrics {
             let slot_grades = GradeScores { syntax, semantics, pragmatics };
+            let mut ccss_tags = db.word_ccss_tags(&replacement);
+            ccss_tags.push(crate::components::ccss::L_9_10_4.to_string());
+            let mut unique_tags = Vec::new();
+            for tag in ccss_tags {
+                if !unique_tags.contains(&tag) {
+                    unique_tags.push(tag);
+                }
+            }
             let event = CastTelemetry {
                 word: lower_replacement.clone(),
                 pos: db.words.get(&lower_replacement).map(|s| s.part_of_speech.to_lowercase()),
@@ -247,7 +255,7 @@ pub fn complete_quest(
                 effective: true,
                 combo: false,
                 device: None,
-                ccss_tags: Vec::new(),
+                ccss_tags: unique_tags,
                 subject: Some(session.subject.clone()),
                 sequence: metrics.telemetry.cast_log.len() as u64,
             };

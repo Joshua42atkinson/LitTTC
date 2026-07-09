@@ -11,6 +11,9 @@
       "Examples": [
         "Ignition",
         "Pyrotechnic"
+      ],
+      "CCSS": [
+        "L.9-10.5"
       ]
     },
     "Aqua": {
@@ -24,6 +27,9 @@
       "Examples": [
         "Aquatic",
         "Hydraulic"
+      ],
+      "CCSS": [
+        "L.9-10.5"
       ]
     },
     "Terra": {
@@ -37,6 +43,9 @@
       "Examples": [
         "Terrain",
         "Geology"
+      ],
+      "CCSS": [
+        "L.9-10.5"
       ]
     },
     "Aer": {
@@ -50,6 +59,9 @@
       "Examples": [
         "Aerial",
         "Pneumatic"
+      ],
+      "CCSS": [
+        "L.9-10.5"
       ]
     },
     "Umbra": {
@@ -89,6 +101,9 @@
       "Examples": [
         "Chronicle",
         "Chronology"
+      ],
+      "CCSS": [
+        "L.9-10.4"
       ]
     },
     "Mort": {
@@ -102,6 +117,9 @@
       "Examples": [
         "Mortal",
         "Mortify"
+      ],
+      "CCSS": [
+        "L.9-10.4"
       ]
     },
     "Vita": {
@@ -115,6 +133,9 @@
       "Examples": [
         "Vital",
         "Vitamin"
+      ],
+      "CCSS": [
+        "L.9-10.4"
       ]
     },
     "Cryo": {
@@ -154,6 +175,9 @@
       "Examples": [
         "Psychology",
         "Psychic"
+      ],
+      "CCSS": [
+        "L.9-10.5"
       ]
     },
     "Phot": {
@@ -245,6 +269,9 @@
       "Examples": [
         "Science",
         "Omniscient"
+      ],
+      "CCSS": [
+        "L.11-12.3"
       ]
     },
     "Cred": {
@@ -258,6 +285,9 @@
       "Examples": [
         "Credible",
         "Credit"
+      ],
+      "CCSS": [
+        "L.9-10.4"
       ]
     },
     "Dyna": {
@@ -271,6 +301,9 @@
       "Examples": [
         "Dynamic",
         "Dynamite"
+      ],
+      "CCSS": [
+        "L.11-12.3"
       ]
     },
     "Bio": {
@@ -284,6 +317,9 @@
       "Examples": [
         "Biology",
         "Biography"
+      ],
+      "CCSS": [
+        "L.11-12.3"
       ]
     },
     "Dict": {
@@ -297,6 +333,9 @@
       "Examples": [
         "Dictate",
         "Prediction"
+      ],
+      "CCSS": [
+        "L.9-10.3"
       ]
     },
     "Voc": {
@@ -310,6 +349,9 @@
       "Examples": [
         "Vocal",
         "Advocate"
+      ],
+      "CCSS": [
+        "L.9-10.3"
       ]
     },
     "Lumina": {

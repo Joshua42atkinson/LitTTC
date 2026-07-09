@@ -354,29 +354,29 @@ Added unit and integration tests across the engine. Test count: 39 → 128 (48 u
 - [x] Ensure all call sites pass updated parameter set.
 
 ### 8.6 Evaluate — Test and commit
-- [/] `cargo test --lib` passes.
-- [/] `cargo test --test integration_tests` passes.
-- [ ] Commit: "Phase 8 complete: stealth assessment telemetry (HD-D, MTLD, syntactic complexity)"
+- [x] `cargo test --lib` passes.
+- [x] `cargo test --test integration_tests` passes.
+- [x] Commit: "Phase 8 complete: stealth assessment telemetry (HD-D, MTLD, syntactic complexity)"
 
 ## Phase 9: CCSS ELA Metadata & Standard Mapping
 
 ### 9.1 Design — Metadata schema
-- [ ] Define `ccss_tags: Vec<String>` for etymology roots and literary devices.
-- [ ] Define standard-code constants for L.9-10.3, L.9-10.4, L.9-10.5, L.11-12.3.
+- [x] Define `ccss_tags: Vec<String>` for etymology roots and literary devices.
+- [x] Define standard-code constants for L.9-10.3, L.9-10.4, L.9-10.5, L.11-12.3.
 
 ### 9.2 Develop — Database tagging
-- [ ] Add `ccss_tags` field to etymology DB records (serde default for backward compat).
-- [ ] Tag a representative subset of roots/devices to demonstrate mapping.
-- [ ] Load tags into runtime structures.
+- [x] Add `ccss_tags` field to etymology DB records (serde default for backward compat).
+- [x] Tag a representative subset of roots/devices to demonstrate mapping.
+- [x] Load tags into runtime structures.
 
 ### 9.3 Implement — CCSS coverage tracker
-- [ ] Add `ccss_coverage: HashMap<String, u32>` to `VaamMetrics`.
-- [ ] Update battle/quest telemetry hooks to increment coverage counts.
-- [ ] Add unit test verifying coverage increments on tagged interactions.
+- [x] Add `ccss_coverage: HashMap<String, u32>` to `VaamMetrics`.
+- [x] Update battle/quest telemetry hooks to increment coverage counts.
+- [x] Add unit test verifying coverage increments on tagged interactions.
 
 ### 9.4 Evaluate — Test and commit
-- [ ] `cargo test` passes.
-- [ ] Commit: "Phase 9 complete: CCSS ELA metadata and standard coverage tracking"
+- [/] `cargo test` passes.
+- [/] Commit: "Phase 9 complete: CCSS ELA metadata and standard coverage tracking"
 
 ## Phase 10: Institutional Telemetry Serialization
 

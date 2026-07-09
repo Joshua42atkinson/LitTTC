@@ -111,6 +111,18 @@ pub struct CastTelemetry {
     pub sequence: u64,
 }
 
+/// Common Core State Standards ELA codes mapped by the stealth assessment system.
+pub mod ccss {
+    /// Figurative language, word relationships, and nuances in word meanings.
+    pub const L_9_10_5: &str = "L.9-10.5";
+    /// Apply knowledge of language to understand how language functions in different contexts.
+    pub const L_9_10_3: &str = "L.9-10.3";
+    /// Determine or clarify the meaning of unknown and multiple-meaning words and phrases.
+    pub const L_9_10_4: &str = "L.9-10.4";
+    /// Apply knowledge of language to make effective choices for meaning or style.
+    pub const L_11_12_3: &str = "L.11-12.3";
+}
+
 /// Snapshot of lexical diversity at a point in time.
 #[derive(Debug, Clone, Copy, PartialEq, Default, Serialize, Deserialize)]
 pub struct LexicalDiversitySnapshot {

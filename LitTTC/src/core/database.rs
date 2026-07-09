@@ -86,12 +86,16 @@ pub struct RootData {
     pub stat_focus: String,
     #[serde(rename = "Color")]
     pub color: [u8; 3],
+    #[serde(rename = "CCSS", default)]
+    pub ccss_tags: Vec<String>,
 }
 
 #[derive(Deserialize, Clone, Debug)]
 pub struct SuffixData {
     #[serde(rename = "Role")]
     pub role: String,
+    #[serde(rename = "CCSS", default)]
+    pub ccss_tags: Vec<String>,
 }
 
 #[derive(Deserialize, Clone, Debug)]
@@ -232,6 +236,36 @@ impl GameDatabase {
             npcs: serde_json::from_str(crate::asset_catalog::load_npc_database()).map_err(|e| e.to_string())?,
         })
     }
+
+    /// Returns the CCSS standard tags associated with a word's etymology root and suffix.
+    ///
+    /// Matches the same substring/ends-with rules used for element and role assignment.
+    /// Tags are deduplicated and ordered by first encounter.
+    pub fn word_ccss_tags(&self, word: &str) -> Vec<String> {
+        let lower = word.to_lowercase();
+        let mut tags = Vec::new();
+        for (root_name, root_data) in &self.etymology.roots {
+            if lower.contains(&root_name.to_lowercase()) {
+                for tag in &root_data.ccss_tags {
+                    if !tags.contains(tag) {
+                        tags.push(tag.clone());
+                    }
+                }
+                break; // Match the first root, consistent with element assignment.
+            }
+        }
+        for (suffix_name, suffix_data) in &self.etymology.suffixes {
+            if lower.ends_with(&suffix_name.to_lowercase()) {
+                for tag in &suffix_data.ccss_tags {
+                    if !tags.contains(tag) {
+                        tags.push(tag.clone());
+                    }
+                }
+                break; // Match the first suffix, consistent with role assignment.
+            }
+        }
+        tags
+    }
 }
 
 #[cfg(test)]
@@ -265,6 +299,20 @@ mod tests {
         let entry = syns.get("abandoned").expect("synonym should parse");
         assert_eq!(entry.element, "Fire");
         assert_eq!(entry.synonyms, vec!["deserted", "forsaken"]);
+    }
+
+    #[test]
+    fn word_ccss_tags_reads_root_and_suffix_tags() {
+        let etymology = r#"{"Roots":{"Igni":{"Element":"Fire","StatFocus":"Logos","Color":[239,68,68],"CCSS":["L.9-10.5"]},"Bio":{"Element":"Earth","StatFocus":"Ethos","Color":[34,197,94],"CCSS":["L.11-12.3"]}},"Suffixes":{"tion":{"Role":"Tank","CCSS":["L.9-10.4"]}}}"#;
+        let mut db = GameDatabase::default();
+        db.etymology = serde_json::from_str(etymology).unwrap();
+
+        let ignition_tags = db.word_ccss_tags("ignition");
+        assert!(ignition_tags.contains(&"L.9-10.5".to_string()));
+        assert!(ignition_tags.contains(&"L.9-10.4".to_string()));
+
+        let biology_tags = db.word_ccss_tags("biology");
+        assert!(biology_tags.contains(&"L.11-12.3".to_string()));
     }
 
     #[test]

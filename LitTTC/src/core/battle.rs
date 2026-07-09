@@ -761,6 +761,20 @@ pub fn play_battle_card(
 
     // Record stealth-assessment telemetry for this cast.
     if let Some(ref mut metrics) = vaam_metrics {
+        let mut ccss_tags = db.word_ccss_tags(played_word);
+        if contextual_resonance.is_some() {
+            ccss_tags.push(crate::components::ccss::L_9_10_5.to_string());
+        }
+        if cast_device.is_some() {
+            ccss_tags.push(crate::components::ccss::L_11_12_3.to_string());
+        }
+        // Deduplicate while preserving order.
+        let mut unique_tags = Vec::new();
+        for tag in ccss_tags {
+            if !unique_tags.contains(&tag) {
+                unique_tags.push(tag);
+            }
+        }
         let event = CastTelemetry {
             word: lower_played,
             pos: played_pos.clone(),
@@ -769,7 +783,7 @@ pub fn play_battle_card(
             effective: is_effective,
             combo: cast_device.is_some(),
             device: cast_device.clone(),
-            ccss_tags: Vec::new(),
+            ccss_tags: unique_tags,
             subject: None,
             sequence: metrics.telemetry.cast_log.len() as u64,
         };
@@ -953,6 +967,17 @@ pub fn cast_sentence(
         let mut seq = metrics.telemetry.cast_log.len() as u64;
         for word in &plot.cards {
             let pos = db.words.get(&word.to_lowercase()).map(|s| s.part_of_speech.to_lowercase());
+            let mut ccss_tags = db.word_ccss_tags(word);
+            ccss_tags.push(crate::components::ccss::L_9_10_5.to_string());
+            if sentence_combo {
+                ccss_tags.push(crate::components::ccss::L_11_12_3.to_string());
+            }
+            let mut unique_tags = Vec::new();
+            for tag in ccss_tags {
+                if !unique_tags.contains(&tag) {
+                    unique_tags.push(tag);
+                }
+            }
             let event = CastTelemetry {
                 word: word.to_lowercase(),
                 pos,
@@ -961,7 +986,7 @@ pub fn cast_sentence(
                 effective: true,
                 combo: sentence_combo,
                 device: sentence_devices.first().cloned(),
-                ccss_tags: Vec::new(),
+                ccss_tags: unique_tags,
                 subject: None,
                 sequence: seq,
             };
